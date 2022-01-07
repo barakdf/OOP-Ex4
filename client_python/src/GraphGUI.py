@@ -1,9 +1,10 @@
+import numpy
 import pygame
 # from GraphAlgo import *
 import math
 from pygame import gfxdraw
 from tkinter import filedialog as fd
-
+import numpy as np
 from client_python.Characters.MyGame import MyGame
 from client_python.client import Client
 from client_python.src import Node
@@ -28,6 +29,10 @@ class Background(pygame.sprite.Sprite):
         self.image = pygame.image.load(image_file)
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = location
+
+
+
+
 
 
 # this algorithm is not mine. https://stackoverflow.com/questions/13053061/circle-line-intersection-points
@@ -450,8 +455,6 @@ class GUI:
             x = self.my_scale(data=float(self.game.pokemon_list[p].pos[0]), x=True)
             y = self.my_scale(data=float(self.game.pokemon_list[p].pos[1]), y=True)
 
-
-
             if self.game.pokemon_list[p].value <= 5.0:
                 gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
                 gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 0, 0))
@@ -464,7 +467,6 @@ class GUI:
             elif self.game.pokemon_list[p].value >= 10:
                 gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
                 gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 0, 128))
-
 
     """------------------> END Draw Methods <-----------------"""
 
