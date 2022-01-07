@@ -1,3 +1,5 @@
+import numpy
+import numpy as np
 import pygame
 # from GraphAlgo import *
 import math
@@ -20,6 +22,7 @@ screen = pygame.display.set_mode((1600, 800), flags=pygame.RESIZABLE)
 SCREEN_TOPLEFT = screen.get_rect().topleft
 SCREEN_BUTTON_R = screen.get_width() / 5
 RADIUS = 10
+clock = pygame.time.Clock()
 
 
 class Background(pygame.sprite.Sprite):
@@ -28,6 +31,12 @@ class Background(pygame.sprite.Sprite):
         self.image = pygame.image.load(image_file)
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = location
+
+
+def dist(x, y):
+    a = np.array(x)
+    b = np.array(y)
+    return numpy.sqrt(numpy.sum((a - b) ** 2))
 
 
 # this algorithm is not mine. https://stackoverflow.com/questions/13053061/circle-line-intersection-points
@@ -450,8 +459,6 @@ class GUI:
             x = self.my_scale(data=float(self.game.pokemon_list[p].pos[0]), x=True)
             y = self.my_scale(data=float(self.game.pokemon_list[p].pos[1]), y=True)
 
-
-
             if self.game.pokemon_list[p].value <= 5.0:
                 gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
                 gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 0, 0))
@@ -464,7 +471,6 @@ class GUI:
             elif self.game.pokemon_list[p].value >= 10:
                 gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
                 gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 0, 128))
-
 
     """------------------> END Draw Methods <-----------------"""
 
@@ -483,11 +489,27 @@ class GUI:
 
             self.update_game()
 
+            # refresh rate
+            clock.tick(60)
+            #
+
             BackGround = Background("../data/BackgroundPics/Orbis_Ship.jpeg", [0, 0])
             screen.fill((210, 180, 140))
             screen.blit(BackGround.image, BackGround.rect)
             self.draw(algo.get_graph(), node_display)
             pygame.display.update()
+
+            #     # choose next edge
+            for agent in self.game.agent_list:
+                if agent.dest == -1:
+                    next_node = (agent.src - 1) % self.graph_algo.get_graph().v_size()
+                    self.client.choose_next_edge(
+                        '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
+                    ttl = self.client.time_to_end()
+                    print(ttl, self.client.get_info())
+
+            self.client.move()
+            print(self.client.get_info())
 
     # def stop_other_buttons(self, tsp=False, shortest=False, center=False, load=False):
     #     if center:
