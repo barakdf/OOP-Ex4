@@ -12,3 +12,6 @@ class agent:
 
     def repr(self):
         return f'Agent : {self.id}, {self.value}, {self.src}, {self.dest}, {self.speed}, {self.pos}'
+
+    def get_pos(self) -> tuple:
+        return self.pos

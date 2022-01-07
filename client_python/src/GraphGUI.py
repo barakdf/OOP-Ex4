@@ -3,6 +3,9 @@ import pygame
 import math
 from pygame import gfxdraw
 from tkinter import filedialog as fd
+
+from client_python.Characters.MyGame import MyGame
+from client_python.client import Client
 from client_python.src import Node
 from client_python.src.GraphAlgo import GraphAlgo
 from data.BackgroundPics import *
@@ -18,6 +21,13 @@ SCREEN_TOPLEFT = screen.get_rect().topleft
 SCREEN_BUTTON_R = screen.get_width() / 5
 RADIUS = 10
 
+
+class Background(pygame.sprite.Sprite):
+    def __init__(self, image_file, location):
+        pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
+        self.image = pygame.image.load(image_file)
+        self.rect = self.image.get_rect()
+        self.rect.left, self.rect.top = location
 
 
 # this algorithm is not mine. https://stackoverflow.com/questions/13053061/circle-line-intersection-points
@@ -180,8 +190,11 @@ start_tsp = False
 
 
 class GUI:
-    def __init__(self, graph):
+    def __init__(self, graph, client: Client, game: MyGame):
         self.graph_algo = GraphAlgo(graph)
+        self.game = game
+        self.client = client
+        self.client.start()
         self.display(self.graph_algo)
 
     # def __init__(self, file: str = None):
@@ -193,6 +206,14 @@ class GUI:
     def init_graph(self, file: str):
         self.graph_algo.load_from_json(file)
         self.display(self.graph_algo)
+
+    def update_game(self):
+        for i in range(self.game.numAgents(self.client.get_info())):
+            id = str(i)
+            self.client.add_agent("{\"id\":" + id + "}")
+        pok_str = self.client.get_pokemons()
+        agent_str = self.client.get_agents()
+        self.game.update_list(p_json=pok_str, a_json=agent_str)
 
     def my_scale(self, data, x=False, y=False):
         if x:
@@ -227,55 +248,55 @@ class GUI:
         gfxdraw.aapolygon(screen, points, color)
         gfxdraw.filled_polygon(screen, points, color)
 
-    def clicked_center(self, button: Button):
-        global center_id
-        center = button.func()
-        center_id.append(center[0])
+    # def clicked_center(self, button: Button):
+    #     global center_id
+    #     center = button.func()
+    #     center_id.append(center[0])
 
-    def clicked_shortest(self, button: Button, src=None, dest=None):
-        global shortest_path
-        shortest_path_func = button.func(int(src), int(dest))
-        shortest_path["dist"] = shortest_path_func[0]
-        shortest_path["list"]: list = shortest_path_func[1]
-        shortest_path["edges"]: list = []
-        shortest_path.get("edges")
-        print(shortest_path_func[1])
-        for i in range(shortest_path["list"].__len__() - 1):
-            shortest_path["edges"].append(
-                (shortest_path["list"].__getitem__(i), shortest_path["list"].__getitem__(i + 1)))
-        print(shortest_path)
-        console.print_shortest(src, dest, path=shortest_path["list"], dist=shortest_path["dist"])
+    # def clicked_shortest(self, button: Button, src=None, dest=None):
+    #     global shortest_path
+    #     shortest_path_func = button.func(int(src), int(dest))
+    #     shortest_path["dist"] = shortest_path_func[0]
+    #     shortest_path["list"]: list = shortest_path_func[1]
+    #     shortest_path["edges"]: list = []
+    #     shortest_path.get("edges")
+    #     print(shortest_path_func[1])
+    #     for i in range(shortest_path["list"].__len__() - 1):
+    #         shortest_path["edges"].append(
+    #             (shortest_path["list"].__getitem__(i), shortest_path["list"].__getitem__(i + 1)))
+    #     print(shortest_path)
+    #     console.print_shortest(src, dest, path=shortest_path["list"], dist=shortest_path["dist"])
 
-    def clicked_tsp(self, button: Button, list_cities):
-        global cities
-        global tsp_ans
-        tsp_ans_func = button.func(list_cities)
-        tsp_ans["list"] = tsp_ans_func[0]
-        tsp_ans["dist"] = tsp_ans_func[1]
-        console.set_func("TSP")
-        if start_tsp:
-            print("GERE", tsp_ans["list"])
-            console.print_TSP(tsp_ans["list"], tsp_ans["dist"])
+    # def clicked_tsp(self, button: Button, list_cities):
+    #     global cities
+    #     global tsp_ans
+    #     tsp_ans_func = button.func(list_cities)
+    #     tsp_ans["list"] = tsp_ans_func[0]
+    #     tsp_ans["dist"] = tsp_ans_func[1]
+    #     console.set_func("TSP")
+    #     if start_tsp:
+    #         print("GERE", tsp_ans["list"])
+    #         console.print_TSP(tsp_ans["list"], tsp_ans["dist"])
 
     """ -------------------------> DRAW <----------------------------"""
 
     def draw(self, graph, node_display=-1):
         """draw menu"""
-        # algo_CLICK_col = (177, 177, 177)
-        # algo_DEAFULT_col = (222, 223, 219)
-        # LOAD_SAVE_DEAFULT = (50, 50, 50)
-        # if center_button.is_clicked:
-        #     pygame.draw.rect(screen, algo_CLICK_col, center_button.rect)
-        # else:
-        #     pygame.draw.rect(screen, algo_DEAFULT_col, center_button.rect)
-        # if shortest_button.is_clicked:
-        #     pygame.draw.rect(screen, algo_CLICK_col, shortest_button.rect)
-        # else:
-        #     pygame.draw.rect(screen, algo_DEAFULT_col, shortest_button.rect)
-        # if tsp_button.is_clicked:
-        #     pygame.draw.rect(screen, algo_CLICK_col, tsp_button.rect)
-        # else:
-        #     pygame.draw.rect(screen, algo_DEAFULT_col, tsp_button.rect)
+        algo_CLICK_col = (177, 177, 177)
+        algo_DEAFULT_col = (222, 223, 219)
+        LOAD_SAVE_DEAFULT = (50, 50, 50)
+        if center_button.is_clicked:
+            pygame.draw.rect(screen, algo_CLICK_col, center_button.rect)
+        else:
+            pygame.draw.rect(screen, algo_DEAFULT_col, center_button.rect)
+        if shortest_button.is_clicked:
+            pygame.draw.rect(screen, algo_CLICK_col, shortest_button.rect)
+        else:
+            pygame.draw.rect(screen, algo_DEAFULT_col, shortest_button.rect)
+        if tsp_button.is_clicked:
+            pygame.draw.rect(screen, algo_CLICK_col, tsp_button.rect)
+        else:
+            pygame.draw.rect(screen, algo_DEAFULT_col, tsp_button.rect)
         # if load_button.is_clicked:
         #     pygame.draw.rect(screen, (177, 177, 177), load_button.rect)
         # else:
@@ -284,40 +305,40 @@ class GUI:
         #     pygame.draw.rect(screen, (177, 177, 177), save_button.rect)
         # else:
         #     pygame.draw.rect(screen, LOAD_SAVE_DEAFULT, save_button.rect)
-        #
+
         # """Console Draw"""
         # pygame.draw.rect(screen, (222, 223, 219), ((0, screen.get_height() - 40), screen.get_rect().bottomright))
         #
         # """draw Action_Button"""
         # if action_button.show:
         #     pygame.draw.rect(screen, (200, 191, 231), action_button.rect)
-        #
-        # pygame.draw.rect(screen, (0, 0, 0), ((0, screen.get_height() - 40), screen.get_rect().bottomright), 3)
-        # pygame.draw.rect(screen, center_button.color, center_button.rect, 3)
-        # pygame.draw.rect(screen, shortest_button.color, shortest_button.rect, 3)
-        # pygame.draw.rect(screen, tsp_button.color, tsp_button.rect, 3)
+
+        pygame.draw.rect(screen, (0, 0, 0), ((0, screen.get_height() - 40), screen.get_rect().bottomright), 3)
+        pygame.draw.rect(screen, center_button.color, center_button.rect, 3)
+        pygame.draw.rect(screen, shortest_button.color, shortest_button.rect, 3)
+        pygame.draw.rect(screen, tsp_button.color, tsp_button.rect, 3)
         # pygame.draw.rect(screen, load_button.color, load_button.rect, 3)
         # pygame.draw.rect(screen, save_button.color, save_button.rect, 3)
-        #
-        # console_text = CONSOLE_FONT.render(console.con_text, True, (0, 0, 0))
-        # screen.blit(console_text, (5, screen.get_height() - 30))
-        #
-        # if node_display != -1:
-        #     node_text = FONT.render(str(node_display), True, (0, 0, 0))
-        #     screen.blit(node_text, (300, 20))
-        #
-        # """center_point button box draw"""
-        # center_but_text = BUTTON_FONT.render(center_button.text, True, (0, 0, 0))
-        # screen.blit(center_but_text, (center_button.rect.topleft[0] + 10, center_button.rect.topleft[1] + 10))
-        #
-        # """shortest_button box draw"""
-        # shortest_button_text = BUTTON_FONT.render(shortest_button.text, True, (0, 0, 0))
-        # screen.blit(shortest_button_text, (shortest_button.rect.topleft[0] + 7, shortest_button.rect.topleft[1] + 10))
-        #
-        # """TSP button box draw"""
-        # tsp_button_text = BUTTON_FONT.render(tsp_button.text, True, (0, 0, 0))
-        # screen.blit(tsp_button_text,
-        #             (tsp_button.rect.topleft[0] + 10, tsp_button.rect.topleft[1] + 10))
+
+        console_text = CONSOLE_FONT.render(console.con_text, True, (0, 0, 0))
+        screen.blit(console_text, (5, screen.get_height() - 30))
+
+        if node_display != -1:
+            node_text = FONT.render(str(node_display), True, (0, 0, 0))
+            screen.blit(node_text, (300, 20))
+
+        """center_point button box draw"""
+        center_but_text = BUTTON_FONT.render(center_button.text, True, (0, 0, 0))
+        screen.blit(center_but_text, (center_button.rect.topleft[0] + 10, center_button.rect.topleft[1] + 10))
+
+        """shortest_button box draw"""
+        shortest_button_text = BUTTON_FONT.render(shortest_button.text, True, (0, 0, 0))
+        screen.blit(shortest_button_text, (shortest_button.rect.topleft[0] + 7, shortest_button.rect.topleft[1] + 10))
+
+        """TSP button box draw"""
+        tsp_button_text = BUTTON_FONT.render(tsp_button.text, True, (0, 0, 0))
+        screen.blit(tsp_button_text,
+                    (tsp_button.rect.topleft[0] + 10, tsp_button.rect.topleft[1] + 10))
         #
         # """LOAD button box draw"""
         # load_button_text = SAVE_LOAD_FONT.render(load_button.text, True, (253, 196, 0))
@@ -416,141 +437,36 @@ class GUI:
                 except TypeError:
                     pass
 
+        # draw agents
+        for a in range(self.game.agent_list.__len__()):
+            x = self.my_scale(data=float(self.game.agent_list[a].pos[0]), x=True)
+            y = self.my_scale(data=float(self.game.agent_list[a].pos[1]), y=True)
+            pos = (int(x), int(y))
+            gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+            gfxdraw.filled_circle(screen, int(x), int(y), 9, (122, 61, 23))
+
     """------------------> END Draw Methods <-----------------"""
 
     shortest_counter = 0
     path_src = -1
 
     def display(self, algo):
-        global shortest_counter, path_src
-        global shortest_src_dest
-        global cities, start_tsp
-        # center_button.func = algo.centerPoint
-        # shortest_button.func = algo.shortest_path
-        # tsp_button.func = algo.TSP
         min_max(algo.get_graph())
         node_display = -1
 
-        run = True
-        while run:
+        while self.client.is_running() == 'true':
             for e in pygame.event.get():
                 if e.type == pygame.QUIT:
-                    run = False
-                # if e.type == pygame.MOUSEBUTTONDOWN:
-                #     """Actions of center button"""
-                #     if center_button.rect.collidepoint(e.pos):
-                #         center_button.press()
-                #         action_button.show = False
-                #
-                #         """Stop action of other buttons"""
-                #         self.stop_other_buttons(center=True)
-                #
-                #         """manage button activity"""
-                #         if center_button.is_clicked:
-                #             self.clicked_center(center_button)
-                #             console.set_func("CenterPoint")
-                #         else:
-                #             center_id.clear()
-                #
-                #     """Actions of shortestPath button"""
-                #     if shortest_button.rect.collidepoint(e.pos):
-                #         shortest_button.press()
-                #         action_button.show = True
-                #         action_button.start = False
-                #         action_button.insert = True
-                #         """Stop action of other buttons"""
-                #         self.stop_other_buttons(shortest=True)
-                #
-                #         """manage button activity"""
-                #         if shortest_button.is_clicked:
-                #             shortest_counter = 0
-                #             print("SHORTEST", shortest_counter)
-                #             console.set_func("ShortestPath")
-                #
-                #         else:
-                #             shortest_path.clear()
-                #             nodes_screen.clear()
-                #     """Actions of TSP button"""
-                #     if tsp_button.rect.collidepoint(e.pos):
-                #         tsp_button.press()
-                #         action_button.show = True
-                #         action_button.insert = False
-                #         action_button.start = True
-                #         """Stop action of other buttons"""
-                #         self.stop_other_buttons(tsp=True)
-                #
-                #         """manage button activity"""
-                #         if tsp_button.is_clicked:
-                #             console.set_func("TSP")
-                #
-                #     """Actions of LOAD button"""
-                #     if load_button.rect.collidepoint(e.pos):
-                #         load_button.press()
-                #         self.stop_other_buttons(load=True)
-                #         if load_button.is_clicked:
-                #             filename = fd.askopenfilename()
-                #             load_button.is_clicked = False
-                #             self.init_graph(filename)
-                #             run = False
-                #
-                #     """Actions of SAVE button"""
-                #     if save_button.rect.collidepoint(e.pos):
-                #         save_button.press()
-                #         if save_button.is_clicked:
-                #             filename = f"{fd.asksaveasfilename()}.json"
-                #             save_button.is_clicked = False
-                #             self.graph_algo.save_to_json(filename)
-                #
-                #     """relevant methods for shortest_path"""
-                #     if shortest_button.is_clicked:
-                #         for n in nodes_screen:
-                #             if n.rect.collidepoint(e.pos):
-                #                 shortest_src_dest = n.id
-                #                 shortest_counter += 1
-                #                 break
-                #         if shortest_counter == 1:
-                #             console.set_func("ShortestPath", src=shortest_src_dest)
-                #             path_src = shortest_src_dest
-                #         elif shortest_counter == 2:
-                #             console.set_func("ShortestPath", src=str(path_src), dest=shortest_src_dest)
-                #             self.clicked_shortest(shortest_button, src=path_src, dest=shortest_src_dest)
-                #             shortest_counter = 3
-                #
-                #         """relevant methods for TSP"""
-                #     elif tsp_button.is_clicked:
-                #         for n in nodes_screen:
-                #             if n.rect.collidepoint(e.pos):
-                #                 cities.append(n.id)
-                #                 self.clicked_tsp(tsp_button, cities)
-                #                 break
-                #         if action_button.rect.collidepoint(e.pos):
-                #             if cities.__len__() > 0:
-                #                 start_tsp = True
-                #                 self.clicked_tsp(tsp_button, cities)
-                #                 cities.clear()
-                #
-                #
-                #     elif not center_button.is_clicked and not tsp_button.is_clicked:
-                #         action_button.show = False
-                #         console.welcome()
+                    pygame.quit()
+                    exit(0)
+
+            self.update_game()
 
             BackGround = Background("../data/BackgroundPics/Orbis_Ship.jpeg", [0, 0])
-
             screen.fill((210, 180, 140))
             screen.blit(BackGround.image, BackGround.rect)
             self.draw(algo.get_graph(), node_display)
             pygame.display.update()
-
-
-
-class Background(pygame.sprite.Sprite):
-        def __init__(self, image_file, location):
-            pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
-            self.image = pygame.image.load(image_file)
-            self.rect = self.image.get_rect()
-            self.rect.left, self.rect.top = location
-
-BackGround = Background("../client_python/src/MapleStory.jpeg", [0, 0])
 
     # def stop_other_buttons(self, tsp=False, shortest=False, center=False, load=False):
     #     if center:
@@ -588,11 +504,11 @@ BackGround = Background("../client_python/src/MapleStory.jpeg", [0, 0])
     #             cities.clear()
 
 
-# center_button = Button(pygame.Rect(SCREEN_TOPLEFT, (SCREEN_BUTTON_R, 40)), (0, 0, 0), "Center Point Algorithm")
-# shortest_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0),
-#                          "Shortest Path Algorithm")
-# tsp_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 2, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0,),
-#                     "TSP Algorithm")
+center_button = Button(pygame.Rect(SCREEN_TOPLEFT, (SCREEN_BUTTON_R, 40)), (0, 0, 0), "STOP")
+shortest_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0),
+                         "TIME")
+tsp_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 2, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0,),
+                    "Catches")
 # load_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 3, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0,),
 #                      "LOAD")
 # save_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 4, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0,),

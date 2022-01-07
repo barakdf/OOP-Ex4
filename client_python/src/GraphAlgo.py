@@ -333,9 +333,8 @@ class GraphAlgo:
                 ans += self.shortest_path(path[i].id, path[i + 1].id)[0]
         return ans
 
-    def plot_graph(self) -> None:
-        GUI(self.graph)
-
+    def plot_graph(self, client: Client, game: MyGame) -> None:
+        GUI(self.graph, client=client, game=game)
 
 # if __name__ == '__main__':
 #     graph = DiGraph()

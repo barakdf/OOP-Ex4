@@ -63,7 +63,7 @@ graph = DiGraph()
 graph_algo = GraphAlgo(graph)
 graph_algo.load_from_json(graph_json)
 
-graph_algo.plot_graph()
+graph_algo.plot_graph(client=client, game=GameManager)
 
 
 #
@@ -119,7 +119,7 @@ graph_algo.plot_graph()
 #     agents = [agent.Agent for agent in agents]
 #     for a in agents:
 #         x, y, _ = a.pos.split(',')
-#         a.pos = SimpleNamespace(x=my_scale(
+#         a.pos = (x=my_scale(
 #             float(x), x=True), y=my_scale(float(y), y=True))
 #     # check events
 #     for event in pygame.event.get():
