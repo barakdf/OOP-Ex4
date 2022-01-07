@@ -6,6 +6,7 @@ class pokemon:
 
         self.p_src = None
         self.p_dest = None
+        self.taken = False
 
     def __str__(self):
         return f'Pokemon: {self.value}, {self.edge_type}, {self.pos}, {self.p_src}, {self.p_dest}'
