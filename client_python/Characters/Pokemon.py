@@ -7,9 +7,11 @@ class pokemon:
         self.p_src = None
         self.p_dest = None
 
-
     def __str__(self):
         return f'Pokemon: {self.value}, {self.edge_type}, {self.pos}, {self.p_src}, {self.p_dest}'
 
     def repr(self):
         return f'Pokemon: {self.value}, {self.edge_type}, {self.pos}, {self.p_src}, {self.p_dest}'
+
+    def get_pos(self):
+        return self.pos

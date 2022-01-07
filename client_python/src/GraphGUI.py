@@ -445,6 +445,27 @@ class GUI:
             gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
             gfxdraw.filled_circle(screen, int(x), int(y), 9, (122, 61, 23))
 
+        # draw pokemon
+        for p in range(self.game.pokemon_list.__len__()):
+            x = self.my_scale(data=float(self.game.pokemon_list[p].pos[0]), x=True)
+            y = self.my_scale(data=float(self.game.pokemon_list[p].pos[1]), y=True)
+
+
+
+            if self.game.pokemon_list[p].value <= 5.0:
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 0, 0))
+            elif self.game.pokemon_list[p].value == 8:
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 255, 64))
+            elif self.game.pokemon_list[p].value == 9:
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 0, 255))
+            elif self.game.pokemon_list[p].value >= 10:
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 0, 128))
+
+
     """------------------> END Draw Methods <-----------------"""
 
     shortest_counter = 0
