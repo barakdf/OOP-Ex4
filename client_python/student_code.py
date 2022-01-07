@@ -33,8 +33,17 @@ client.start_connection(HOST, PORT)
 
 print("info ", client.get_info())
 
+graph_json = client.get_graph()
+
+""" INIT GRAPH """
+graph = DiGraph()
+graph_algo = GraphAlgo(graph)
+graph_algo.load_from_json(graph_json)
+
+
+
 print(client.get_agents())
-GameManager = MyGame()
+GameManager = MyGame(graph=graph_algo.get_graph())
 for i in range(GameManager.numAgents(client.get_info())):
     id = str(i)
     client.add_agent("{\"id\":" + id + "}")
@@ -51,17 +60,11 @@ print(agent_str)
 print("Test: ", GameManager.agent_list)
 
 
-graph_json = client.get_graph()
-
-
 
 FONT = pygame.font.SysFont('Arial', 20, bold=True)
 # load the json string into SimpleNamespace Object
 
-""" INIT GRAPH """
-graph = DiGraph()
-graph_algo = GraphAlgo(graph)
-graph_algo.load_from_json(graph_json)
+
 
 graph_algo.plot_graph(client=client, game=GameManager)
 

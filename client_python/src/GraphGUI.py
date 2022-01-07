@@ -33,10 +33,7 @@ class Background(pygame.sprite.Sprite):
         self.rect.left, self.rect.top = location
 
 
-def dist(x, y):
-    a = np.array(x)
-    b = np.array(y)
-    return numpy.sqrt(numpy.sum((a - b) ** 2))
+
 
 
 # this algorithm is not mine. https://stackoverflow.com/questions/13053061/circle-line-intersection-points
