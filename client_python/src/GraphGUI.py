@@ -1,8 +1,4 @@
 import numpy
-<<<<<<< HEAD
-=======
-import numpy as np
->>>>>>> Barak_branch
 import pygame
 # from GraphAlgo import *
 import math
@@ -36,15 +32,8 @@ class Background(pygame.sprite.Sprite):
         self.rect.left, self.rect.top = location
 
 
-<<<<<<< HEAD
 
 
-=======
-def dist(x, y):
-    a = np.array(x)
-    b = np.array(y)
-    return numpy.sqrt(numpy.sum((a - b) ** 2))
->>>>>>> Barak_branch
 
 
 # this algorithm is not mine. https://stackoverflow.com/questions/13053061/circle-line-intersection-points
