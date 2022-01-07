@@ -1,4 +1,8 @@
 import numpy
+<<<<<<< HEAD
+=======
+import numpy as np
+>>>>>>> Barak_branch
 import pygame
 # from GraphAlgo import *
 import math
@@ -21,6 +25,7 @@ screen = pygame.display.set_mode((1600, 800), flags=pygame.RESIZABLE)
 SCREEN_TOPLEFT = screen.get_rect().topleft
 SCREEN_BUTTON_R = screen.get_width() / 5
 RADIUS = 10
+clock = pygame.time.Clock()
 
 
 class Background(pygame.sprite.Sprite):
@@ -31,8 +36,15 @@ class Background(pygame.sprite.Sprite):
         self.rect.left, self.rect.top = location
 
 
+<<<<<<< HEAD
 
 
+=======
+def dist(x, y):
+    a = np.array(x)
+    b = np.array(y)
+    return numpy.sqrt(numpy.sum((a - b) ** 2))
+>>>>>>> Barak_branch
 
 
 # this algorithm is not mine. https://stackoverflow.com/questions/13053061/circle-line-intersection-points
@@ -485,11 +497,27 @@ class GUI:
 
             self.update_game()
 
+            # refresh rate
+            clock.tick(60)
+            #
+
             BackGround = Background("../data/BackgroundPics/Orbis_Ship.jpeg", [0, 0])
             screen.fill((210, 180, 140))
             screen.blit(BackGround.image, BackGround.rect)
             self.draw(algo.get_graph(), node_display)
             pygame.display.update()
+
+            #     # choose next edge
+            for agent in self.game.agent_list:
+                if agent.dest == -1:
+                    next_node = (agent.src - 1) % self.graph_algo.get_graph().v_size()
+                    self.client.choose_next_edge(
+                        '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
+                    ttl = self.client.time_to_end()
+                    print(ttl, self.client.get_info())
+
+            self.client.move()
+            print(self.client.get_info())
 
     # def stop_other_buttons(self, tsp=False, shortest=False, center=False, load=False):
     #     if center:
