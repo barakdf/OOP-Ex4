@@ -1,8 +1,11 @@
 class pokemon:
     def __init__(self, value: int, edge_type: int, pos: tuple):
-        value = value
-        edge_type = edge_type
-        pos = pos
+        self.value = value
+        self.edge_type = edge_type
+        self.pos = pos
 
-        p_src = None
-        p_dest = None
+        self.p_src = None
+        self.p_dest = None
+
+    def repr(self):
+        return f'Pokemon: {self.value}, {self.edge_type}, {self.pos}, {self.p_src}, {self.p_dest}'

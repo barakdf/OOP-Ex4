@@ -9,6 +9,7 @@ from types import SimpleNamespace
 import pygame
 from pygame import *
 
+from client_python.Characters.MyGame import MyGame
 from src.DiGraph import DiGraph
 from client import Client
 from src.GraphAlgo import GraphAlgo
@@ -23,18 +24,28 @@ PORT = 6666
 HOST = '127.0.0.1'
 pygame.init()
 
-screen = display.set_mode((WIDTH, HEIGHT), depth=32, flags=RESIZABLE)
+# screen = display.set_mode((WIDTH, HEIGHT), depth=32, flags=RESIZABLE)
 clock = pygame.time.Clock()
 pygame.font.init()
 
 client = Client()
 client.start_connection(HOST, PORT)
 
-pok_str = client.get_pokemons()
+GameManager = MyGame()
 
-pokemons_obj = json.loads(pok_str, object_hook=lambda d: SimpleNamespace(**d))
+pok_str = client.get_pokemons()
+agent_str = client.get_agents()
+GameManager.update_list(p_json=pok_str, a_json=agent_str)
+
+
+
 
 print(pok_str)
+print("Test: ", GameManager.pokemon_list)
+
+print(agent_str)
+print("Test: ", GameManager.agent_list)
+
 
 graph_json = client.get_graph()
 
