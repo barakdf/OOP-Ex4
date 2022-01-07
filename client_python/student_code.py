@@ -35,7 +35,9 @@ print("info ", client.get_info())
 
 print(client.get_agents())
 GameManager = MyGame()
-
+for i in range(GameManager.numAgents(client.get_info())):
+    id = str(i)
+    client.add_agent("{\"id\":" + id + "}")
 pok_str = client.get_pokemons()
 agent_str = client.get_agents()
 GameManager.update_list(p_json=pok_str, a_json=agent_str)

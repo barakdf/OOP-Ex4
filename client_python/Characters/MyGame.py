@@ -5,6 +5,8 @@ from client_python.Characters.Agent import agent
 from client_python.Characters.Pokemon import pokemon
 
 
+numOfAgents = 0
+
 class MyGame:
     def __init__(self):
         self.pokemon_list = []
@@ -18,6 +20,7 @@ class MyGame:
         self.agent_list.append(agent)
 
     def update_list(self, p_json: str, a_json: str):
+        global numOfAgents
         """Add Pokemon from JSON"""
         p_dic = json.loads(p_json)
 
@@ -31,6 +34,8 @@ class MyGame:
             print(pok.repr())
 
         """Add Agent from JSON"""
+
+
         agent_dic = json.loads(a_json)
 
         for a in agent_dic["Agents"]:
@@ -41,5 +46,5 @@ class MyGame:
 
 
 
-def numAgents(self, info: str):
-    return int(json.loads(info)["GameServer"]["agents"])
+    def numAgents(self, info: str) -> int:
+        return int(json.loads(info)["GameServer"]["agents"])
