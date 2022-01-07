@@ -1,13 +1,10 @@
 import pygame
-import os
-from GraphAlgo import *
-from DiGraph import *
+# from GraphAlgo import *
 import math
 from pygame import gfxdraw
 from tkinter import filedialog as fd
-
-from src import GraphAlgoInterface
-from src.GraphAlgo import GraphAlgo
+from client_python.src import Node
+from client_python.src.GraphAlgo import GraphAlgo
 
 pygame.font.init()
 FONT = pygame.font.SysFont("Ariel", 20)
@@ -260,7 +257,7 @@ class GUI:
 
     """ -------------------------> DRAW <----------------------------"""
 
-    def draw(self, graph: GraphInterface, node_display=-1):
+    def draw(self, graph, node_display=-1):
         """draw menu"""
         algo_CLICK_col = (177, 177, 177)
         algo_DEAFULT_col = (222, 223, 219)

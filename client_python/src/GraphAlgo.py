@@ -1,24 +1,27 @@
-from GraphGUI import *
-from GraphAlgoInterface import *
 import copy
 import math
 import random
-import sys
-from abc import ABC
 from typing import List
 import json
-from DiGraph import *
-from Node import *
-from PriorityQueue import *
-import heapq
+# from src.client import Client
+
+# default port
+from client_python.src import Node
+from client_python.src.DiGraph import DiGraph
+from client_python.src.GraphGUI import *
+from client_python.src.PriorityQueue import PriorityQueue
+
+PORT = 6666
+# server host (default localhost 127.0.0.1)
+HOST = '127.0.0.1'
 
 
-class GraphAlgo(GraphAlgoInterface, ABC):
+class GraphAlgo:
 
-    def __int__(self):
-        self.graph: GraphInterface = DiGraph()
+    # def __int__(self):
+    #     self.graph: GraphInterface = DiGraph()
 
-    def __init__(self, graph: DiGraph = None):
+    def __init__(self, graph: DiGraph):
         self.graph = graph
 
     """
@@ -26,7 +29,7 @@ class GraphAlgo(GraphAlgoInterface, ABC):
         This method return the current graph 
     """
 
-    def get_graph(self) -> GraphInterface:
+    def get_graph(self):
         return self.graph
 
     """
@@ -37,10 +40,8 @@ class GraphAlgo(GraphAlgoInterface, ABC):
     def load_from_json(self, file_name: str) -> bool:
         try:
 
-            with open(file_name, "r") as f:
-                dic = {}
-                g = DiGraph()
-                dic = json.load(fp=f)
+            g = DiGraph()
+            dic = json.loads(file_name)
 
             for n in dic["Nodes"]:
                 if len(n.keys()) == 1:
@@ -336,3 +337,15 @@ class GraphAlgo(GraphAlgoInterface, ABC):
         GUI(self.graph)
 
 
+# if __name__ == '__main__':
+#     graph = DiGraph()
+#     graph_algo: GraphAlgoInterface = GraphAlgo(graph)
+#
+#     client = Client()
+#     client.start_connection(HOST, PORT)
+#
+#     graph_json = client.get_graph()
+#
+#     graph_algo.load_from_json(graph_json)
+#     print("PRINT", graph_algo.get_graph())
+#     GUI(graph_algo.get_graph())

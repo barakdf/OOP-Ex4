@@ -1,5 +1,6 @@
 import math
 
+
 class Node:
     def __init__(self, id: int, pos: tuple):
         self.id = id
@@ -13,8 +14,6 @@ class Node:
     def set_weight(self, data: int):
         self.weight = data
 
-
-
     def get_tag(self):
         return self.tag
 
@@ -25,15 +24,5 @@ class Node:
     def __repr__(self):
         return f"id: {self.id}, pos: {self.pos} weight: {self.weight}"
 
-
     def __lt__(self, other):
         return self.weight < other.weight
-
-if __name__ == '__main__':
-    pos = (1, 2, 3)
-    node = Node(1, pos)
-
-    print(node.get_weight())
-    node.set_weight(0)
-#
-# print(node.weight)

@@ -1,7 +1,8 @@
 # A simple implementation of Priority Queue
 # using Queue.
-from Node import *
 import heapq
+
+from client_python.src import Node
 
 
 class PriorityQueue(object):
@@ -33,18 +34,3 @@ class PriorityQueue(object):
         except IndexError:
             print()
             exit()
-
-
-
-
-
-
-if __name__ == '__main__':
-    myQueue = PriorityQueue()
-    myQueue.add(12)
-    myQueue.add(1)
-    myQueue.add(14)
-    myQueue.add(7)
-    print(myQueue)
-    while not myQueue.isEmpty():
-        print(myQueue.pop())

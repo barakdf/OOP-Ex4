@@ -1,9 +1,7 @@
-from abc import ABC
-from Node import *
-from GraphInterface import *
+from client_python.src.Node import Node
 
 
-class DiGraph(GraphInterface, ABC):
+class DiGraph:
     def __init__(self):
         self.MC = 0
         self.nodes = {}
@@ -11,11 +9,11 @@ class DiGraph(GraphInterface, ABC):
         self.edges_in = {}
         self.edges_out.values().__len__()
 
-
     def v_size(self) -> int:
         return self.nodes.__len__()
 
     '''add to new list all edges in graph assuming that edges_out has the same value as edges_in'''
+
     def e_size(self) -> int:
         e_size_list = []
 
@@ -66,9 +64,6 @@ class DiGraph(GraphInterface, ABC):
         self.MC += 1
 
         return True
-
-
-
 
     def add_node(self, node_id: int, pos: tuple = None) -> bool:
         new_node = Node(node_id, pos)
