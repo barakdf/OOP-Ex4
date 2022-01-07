@@ -12,30 +12,34 @@ class MyGame:
 
     def add_pokemon(self, pokemon: Pokemon):
         self.pokemon_list.append(pokemon)
-        self.pokemon_list.sort(key=pokemon.value, reverse=True)
+        #self.pokemon_list.sort(key=pokemon.value, reverse=True)
 
     def add_agent(self, agent: Agent):
         self.agent_list.append(agent)
 
     def update_list(self, p_json: str, a_json: str):
-
         """Add Pokemon from JSON"""
         p_dic = json.loads(p_json)
 
-        for n in p_dic["Pokemons"]:
-            p = n["pos"].split(",")
-            pos = (p[0], p[1], p[2])
-            pok = pokemon(value=n["value"], edge_type=n["type"], pos=pos)
+        for i in p_dic["Pokemons"]:
+
+            pok = pokemon(value=i["Pokemon"]["value"], edge_type=i["Pokemon"]["type"],
+                          pos=i["Pokemon"]["pos"].split(","))
+
+
             self.add_pokemon(pok)
+            print(pok.repr())
 
         """Add Agent from JSON"""
         agent_dic = json.loads(a_json)
 
         for a in agent_dic["Agents"]:
-            p = a["pos"].split(",")
-            pos = (p[0], p[1], p[2])
-            t_agent = agent(id=a["id"], value=a["value"], src=a["src"], dest=a["dest"], speed=a["speed"], pos=pos)
+            t_agent = agent(id=a["Agent"]["id"], value=a["Agent"]["value"], src=a["Agent"]["src"], dest=a["Agent"]["dest"], speed=a["Agent"]["speed"], pos=a["Agent"]["pos"].split(","))
             self.add_agent(t_agent)
+            print(t_agent.repr())
 
-    def numAgents(self, info: str):
-        return int(json.loads(info)["GameServer"]["agents"])
+
+
+
+def numAgents(self, info: str):
+    return int(json.loads(info)["GameServer"]["agents"])

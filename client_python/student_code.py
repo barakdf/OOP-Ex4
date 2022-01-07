@@ -31,12 +31,14 @@ pygame.font.init()
 client = Client()
 client.start_connection(HOST, PORT)
 
+print("info ", client.get_info())
+
+print(client.get_agents())
 GameManager = MyGame()
 
 pok_str = client.get_pokemons()
 agent_str = client.get_agents()
 GameManager.update_list(p_json=pok_str, a_json=agent_str)
-
 
 
 
@@ -48,6 +50,8 @@ print("Test: ", GameManager.agent_list)
 
 
 graph_json = client.get_graph()
+
+
 
 FONT = pygame.font.SysFont('Arial', 20, bold=True)
 # load the json string into SimpleNamespace Object
