@@ -1,10 +1,11 @@
 import numpy
+import numpy as np
 import pygame
 # from GraphAlgo import *
 import math
 from pygame import gfxdraw
 from tkinter import filedialog as fd
-import numpy as np
+
 from client_python.Characters.MyGame import MyGame
 from client_python.client import Client
 from client_python.src import Node
@@ -32,8 +33,10 @@ class Background(pygame.sprite.Sprite):
         self.rect.left, self.rect.top = location
 
 
-
-
+def dist(x, y):
+    a = np.array(x)
+    b = np.array(y)
+    return numpy.sqrt(numpy.sum((a - b) ** 2))
 
 
 # this algorithm is not mine. https://stackoverflow.com/questions/13053061/circle-line-intersection-points
