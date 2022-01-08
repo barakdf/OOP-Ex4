@@ -11,11 +11,11 @@ class pokemon:
     def __str__(self):
         return f'Pokemon: {self.value}, {self.edge_type}, {self.pos}, {self.p_src}, {self.p_dest}'
 
-    def repr(self):
-        return f'Pokemon: {self.value}, {self.edge_type}, {self.pos}, {self.p_src}, {self.p_dest}'
+    def __repr__(self):
+        return f'Pokemon: {self.value}, {self.edge_type}, {self.pos}, {self.p_src}, {self.p_dest}, {self.taken}'
 
     def get_pos(self):
         return self.pos
 
     def __lt__(self, other):
-        return self.value < other.value
+        return self.value > other.value

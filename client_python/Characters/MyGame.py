@@ -24,7 +24,7 @@ class MyGame:
 
     def add_pokemon(self, pokemon: Pokemon):
         self.pokemon_list.append(pokemon)
-        # self.pokemon_list.sort(key=pokemon.value, reverse=True)
+        self.pokemon_list.sort()
 
     def add_agent(self, agent: Agent):
         self.agent_list.append(agent)
@@ -39,12 +39,15 @@ class MyGame:
             pok = pokemon(value=i["Pokemon"]["value"], edge_type=i["Pokemon"]["type"],
                           pos=i["Pokemon"]["pos"].split(","))
 
+            """ find the edge of each pokemon"""
             pokemon_pos = (float(pok.pos[0]), float(pok.pos[1]), float(pok.pos[2]))
             edge_pos = self.find_edge(pokPos=pokemon_pos, type=pok.edge_type)
             pok.p_src, pok.p_dest = edge_pos[0], edge_pos[1]
             # print("Pokemon val: ", pok.value, "POS: ", pok.p_src, pok.p_dest)
 
             self.add_pokemon(pok)
+
+        print(self.pokemon_list.__repr__())
 
         """Add Agent from JSON"""
 
@@ -56,17 +59,28 @@ class MyGame:
                             dest=a["Agent"]["dest"], speed=a["Agent"]["speed"], pos=a["Agent"]["pos"].split(","))
             self.add_agent(t_agent)
 
-        self.deploy_agents()
+        if not self.deployed:
+            self.deploy_agents()
+        else:
+            pass
+
+
+    def CallOfDuty(self):
+        for a in self.agent_list:
+            ag: agent = self.agent_list[a]
+            for p in self.pokemon_list:
+                pok: pokemon = self.pokemon_list[p]
 
     def deploy_agents(self) -> bool:
-        for a in self.agent_list:
-            max_val = 0
+        for a in range(len(self.agent_list)):
+            ag: agent = self.agent_list[a]
             for p in range(len(self.pokemon_list)):
-                x: pokemon = self.pokemon_list[p]
-
-                if max_val < x.value:
-                    max_val = x.value
-
+                curr_pok: pokemon = self.pokemon_list[p]
+                if not curr_pok.taken:
+                    ag.src = curr_pok.p_src
+                    curr_pok.taken = True
+                    ag.explore.append(curr_pok.p_dest)
+        self.deployed = True
 
         return True
 
