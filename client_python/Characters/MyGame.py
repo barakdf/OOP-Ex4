@@ -1,13 +1,11 @@
 import json
 import math
 
-import numpy
+import numpy as np
 
 from client_python.Characters import Pokemon, Agent
 from client_python.Characters.Agent import agent
 from client_python.Characters.Pokemon import pokemon
-import numpy as np
-
 from client_python.src.DiGraph import DiGraph
 from client_python.src.GraphAlgo import GraphAlgo
 from client_python.src.Node import Node
@@ -68,13 +66,42 @@ class MyGame:
         if not self.deployed:
             self.deploy_agents()
         else:
-            pass
+            self.Call_Of_Duty()
 
     def Call_Of_Duty(self):
-        for p in self.pokemon_list:
+        for p in range(self.pokemon_list.__len__()):
             pok: pokemon = self.pokemon_list[p]
-            for a in self.agent_list:
-                ag: agent = self.agent_list[a]
+            if not pok.taken:
+                self.allocate(self.agent_list, pok)
+
+    def allocate(self, listAgent: list, pok: pokemon):
+        currAgent = None
+        path = []
+        on_the_way = False
+        minVal = math.inf
+        for a in range(listAgent.__len__()):
+            ag: agent = listAgent[a]
+            tup = self.is_on_the_way(pok.p_src, pok.p_dest, ag.explore)
+            if tup[0]:
+                if tup[1] < minVal:
+                    minVal = tup[1]
+                    currAgent = ag
+                    on_the_way = True
+
+            else:
+                shortest: tuple = self.graphAlgo.shortest_path(ag.explore[ag.explore.__len__() - 1], pok.p_src)
+                if ag.weight + shortest[0] < minVal and shortest[0] != -1:
+                    minVal = ag.weight + shortest[0]
+                    currAgent = ag
+                    on_the_way = False
+                    path = shortest[1]
+
+        currAgent.targets[pok.p_src] = True
+        if not on_the_way:
+            for i in path:
+                currAgent.explore.append(path[i])
+            currAgent.explore.append(pok.p_dest)
+        pok.taken = True
 
     def is_on_the_way(self, pokSrc: int, pokDest: int, explore: list) -> tuple:
         temp = 0
@@ -87,104 +114,59 @@ class MyGame:
                     return True, temp
         return False, -1
 
-    def allocte(self, listAgent: list, pok: pokemon):
-        currAgent = None
-        path = []
-        on_the_way = False
-        minVal = math.inf
-        for a in listAgent:
-            ag: agent = listAgent[a]
-            tup = self.is_on_the_way(pok.p_src, ag.explore)
-            if tup[0]:
-                if tup[1] < minVal:
-                    minVal = tup[1]
-                    currAgent = ag
-                    on_the_way = True
+    def deploy_agents(self) -> bool:
+        for a in range(len(self.agent_list)):
+            ag: agent = self.agent_list[a]
+            for p in range(len(self.pokemon_list)):
+                curr_pok: pokemon = self.pokemon_list[p]
+                if not curr_pok.taken:
+                    ag.src = curr_pok.p_src
+                    curr_pok.taken = True
+                    ag.explore.append(curr_pok.pos)
+                    ag.explore.append(curr_pok.p_dest)
+        self.deployed = True
 
-            else:
-                shortest: tuple = self.graphAlgo.shortest_path(ag.explore[ag.explore.__len__() - 1], pok.p_src)
-                if shortest[0] < minVal and shortest[0] != -1:
-                    minVal = tup[0]
-                    currAgent = ag
-                    on_the_way = False
-                    path = shortest[1]
+        return True
 
-        currAgent.targets[pok.p_src] = True
-        if not on_the_way:
-            for i in path:
-                currAgent.explore.append(path[i])
-            currAgent.explore.append(pok.p_dest)
+    def numAgents(self, info: str) -> int:
+        return int(json.loads(info)["GameServer"]["agents"])
 
+    def dist(self, x, y):
+        a = np.array(x)
+        b = np.array(y)
+        return np.sqrt(np.sum((a - b) ** 2))
 
-def deploy_agents(self) -> bool:
-    for a in range(len(self.agent_list)):
-        ag: agent = self.agent_list[a]
-        for p in range(len(self.pokemon_list)):
-            curr_pok: pokemon = self.pokemon_list[p]
-            if not curr_pok.taken:
-                ag.src = curr_pok.p_src
-                curr_pok.taken = True
-                ag.explore.append(curr_pok.p_dest)
-    self.deployed = True
+    def find_edge(self, pokPos: tuple, type: int) -> tuple:
+        min_dist = math.inf
+        curr_pos = ()
+        for i in self.graph.get_all_v():
+            src: Node = self.graph.get_all_v().get(i)
+            for j in self.graph.all_out_edges_of_node(src.id):
+                dest: Node = self.graph.get_all_v().get(j)
+                # print(src.id, "-->", dest.id)
 
-    return True
+                if type < 0:
+                    if src.id > dest.id and self.is_on(pokPos, src.pos, dest.pos) < min_dist:
+                        min_dist = self.is_on(pokPos, src.pos, dest.pos)
+                        curr_pos = (src.id, dest.id)
+                else:
+                    if src.id < dest.id and self.is_on(pokPos, src.pos, dest.pos) < min_dist:
+                        min_dist = self.is_on(pokPos, src.pos, dest.pos)
+                        curr_pos = (src.id, dest.id)
+        # print(min_dist)
+        return curr_pos
 
+    def is_on(self, pokPos: tuple, srcPos: tuple, destPos: tuple) -> float:
+        src_x_y = (srcPos[0], srcPos[1])
+        dest_x_y = (destPos[0], destPos[1])
+        dis = math.dist(src_x_y, dest_x_y)
 
-def numAgents(self, info: str) -> int:
-    return int(json.loads(info)["GameServer"]["agents"])
+        pokDist = math.dist(srcPos, pokPos) + math.dist(pokPos, destPos)
 
+        return math.fabs(dis - pokDist)
 
-def dist(self, x, y):
-    a = np.array(x)
-    b = np.array(y)
-    return np.sqrt(np.sum((a - b) ** 2))
+    def __str__(self) -> str:
+        return super().__str__()
 
-
-def find_edge(self, pokPos: tuple, type: int) -> tuple:
-    min_dist = math.inf
-    curr_pos = ()
-    for i in self.graph.get_all_v():
-        src: Node = self.graph.get_all_v().get(i)
-        for j in self.graph.all_out_edges_of_node(src.id):
-            dest: Node = self.graph.get_all_v().get(j)
-            # print(src.id, "-->", dest.id)
-
-            if type < 0:
-                if src.id > dest.id and self.is_on(pokPos, src.pos, dest.pos) < min_dist:
-                    min_dist = self.is_on(pokPos, src.pos, dest.pos)
-                    curr_pos = (src.id, dest.id)
-            else:
-                if src.id < dest.id and self.is_on(pokPos, src.pos, dest.pos) < min_dist:
-                    min_dist = self.is_on(pokPos, src.pos, dest.pos)
-                    curr_pos = (src.id, dest.id)
-    # print(min_dist)
-    return curr_pos
-
-
-def is_on(self, pokPos: tuple, srcPos: tuple, destPos: tuple) -> float:
-    src_x_y = (srcPos[0], srcPos[1])
-    dest_x_y = (destPos[0], destPos[1])
-    dis = math.dist(src_x_y, dest_x_y)
-
-    pokDist = math.dist(srcPos, pokPos) + math.dist(pokPos, destPos)
-
-    return math.fabs(dis - pokDist)
-
-
-def __str__(self) -> str:
-    return super().__str__()
-
-
-def __repr__(self) -> str:
-    return super().__repr__()
-
-# #:[{"Pokemon":{"value":5.0,"type":-1,"pos":"35.197656770719604,32.10191878639921,0.0"}}]}
-# if __name__ == '__main__':
-#     a = (5.20319591121872, 32.1031462, 0.0)
-#     b = (35.19597880064568, 32.10154696638656, 0.0)
-#
-#     c = (35.197656770719604, 32.10191878639921, 0.0)
-#
-#     pok = pokemon(5, -1, c)
-#
-#
+    def __repr__(self) -> str:
+        return super().__repr__()
