@@ -1,3 +1,4 @@
+import sys
 import threading
 import time
 
@@ -15,6 +16,7 @@ from client_python.client import Client
 from client_python.src import Node
 from data.BackgroundPics import *
 
+EPS = 0.1
 first = True
 start = 0
 pygame.font.init()
@@ -196,6 +198,10 @@ tsp_ans = {}
 cities = []
 start_tsp = False
 
+moves = ""
+catches = ""
+time_left = ""
+
 """ --------------------------------------------> GUI <--------------------------------------------------------"""
 
 
@@ -216,6 +222,16 @@ class GUI:
     # def init_graph(self, file: str):
     #     self.graph_algo.load_from_json(file)
     #     self.display(self.graph_algo)
+
+    def update_info(self):
+        global moves, catches, time_left
+
+        dic = json.loads(self.client.get_info())
+
+        i = dic["GameServer"]
+        moves = i["moves"]
+        catches = i["grade"]
+        time_left = str(int(self.client.time_to_end()) / 1000)
 
     def update_game(self):
         for i in range(self.game.numAgents(self.client.get_info())):
@@ -291,26 +307,33 @@ class GUI:
     """ -------------------------> DRAW <----------------------------"""
 
     def draw(self, graph, node_display=-1):
+        SCREEN_BUTTON_R = screen.get_width() / 4
+        """scaling buttons size"""
+        moves_button.rect = pygame.Rect(SCREEN_TOPLEFT, (SCREEN_BUTTON_R, 40))
+        time_button.rect = pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R, 0), (SCREEN_BUTTON_R, 40))
+        catches_button.rect = pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 2, 0), (SCREEN_BUTTON_R, 40))
+        stop_button.rect = pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 3, 0), (SCREEN_BUTTON_R, 40))
+
         """draw menu"""
-        algo_CLICK_col = (177, 177, 177)
-        algo_DEAFULT_col = (222, 223, 219)
-        LOAD_SAVE_DEAFULT = (50, 50, 50)
-        if center_button.is_clicked:
-            pygame.draw.rect(screen, algo_CLICK_col, center_button.rect)
+        CLICK_col = (177, 177, 177)
+        DEAFULT_col = (222, 223, 219)
+        STOP_col = (50, 50, 50)
+        if moves_button.is_clicked:
+            pygame.draw.rect(screen, CLICK_col, moves_button.rect)
         else:
-            pygame.draw.rect(screen, algo_DEAFULT_col, center_button.rect)
-        if shortest_button.is_clicked:
-            pygame.draw.rect(screen, algo_CLICK_col, shortest_button.rect)
+            pygame.draw.rect(screen, DEAFULT_col, moves_button.rect)
+        if time_button.is_clicked:
+            pygame.draw.rect(screen, CLICK_col, time_button.rect)
         else:
-            pygame.draw.rect(screen, algo_DEAFULT_col, shortest_button.rect)
-        if tsp_button.is_clicked:
-            pygame.draw.rect(screen, algo_CLICK_col, tsp_button.rect)
+            pygame.draw.rect(screen, DEAFULT_col, time_button.rect)
+        if catches_button.is_clicked:
+            pygame.draw.rect(screen, CLICK_col, catches_button.rect)
         else:
-            pygame.draw.rect(screen, algo_DEAFULT_col, tsp_button.rect)
-        # if load_button.is_clicked:
-        #     pygame.draw.rect(screen, (177, 177, 177), load_button.rect)
-        # else:
-        #     pygame.draw.rect(screen, LOAD_SAVE_DEAFULT, load_button.rect)
+            pygame.draw.rect(screen, DEAFULT_col, catches_button.rect)
+        if stop_button.is_clicked:
+            pygame.draw.rect(screen, (177, 177, 177), stop_button.rect)
+        else:
+            pygame.draw.rect(screen, STOP_col, stop_button.rect)
         # if save_button.is_clicked:
         #     pygame.draw.rect(screen, (177, 177, 177), save_button.rect)
         # else:
@@ -324,10 +347,10 @@ class GUI:
         #     pygame.draw.rect(screen, (200, 191, 231), action_button.rect)
 
         pygame.draw.rect(screen, (0, 0, 0), ((0, screen.get_height() - 40), screen.get_rect().bottomright), 3)
-        pygame.draw.rect(screen, center_button.color, center_button.rect, 3)
-        pygame.draw.rect(screen, shortest_button.color, shortest_button.rect, 3)
-        pygame.draw.rect(screen, tsp_button.color, tsp_button.rect, 3)
-        # pygame.draw.rect(screen, load_button.color, load_button.rect, 3)
+        pygame.draw.rect(screen, moves_button.color, moves_button.rect, 3)
+        pygame.draw.rect(screen, time_button.color, time_button.rect, 3)
+        pygame.draw.rect(screen, catches_button.color, catches_button.rect, 3)
+        pygame.draw.rect(screen, stop_button.color, stop_button.rect, 3)
         # pygame.draw.rect(screen, save_button.color, save_button.rect, 3)
 
         console_text = CONSOLE_FONT.render(console.con_text, True, (0, 0, 0))
@@ -337,23 +360,28 @@ class GUI:
             node_text = FONT.render(str(node_display), True, (0, 0, 0))
             screen.blit(node_text, (300, 20))
 
-        """center_point button box draw"""
-        center_but_text = BUTTON_FONT.render(center_button.text, True, (0, 0, 0))
-        screen.blit(center_but_text, (center_button.rect.topleft[0] + 10, center_button.rect.topleft[1] + 10))
+        """Moves button box draw"""
+        move_text = f"{moves_button.text}{moves}"
+        center_but_text = BUTTON_FONT.render(move_text, True, (0, 0, 0))
+        screen.blit(center_but_text, (moves_button.rect.topleft[0] + 10, moves_button.rect.topleft[1] + 10))
 
-        """shortest_button box draw"""
-        shortest_button_text = BUTTON_FONT.render(shortest_button.text, True, (0, 0, 0))
-        screen.blit(shortest_button_text, (shortest_button.rect.topleft[0] + 7, shortest_button.rect.topleft[1] + 10))
+        """Time Left box draw"""
+        if float(time_left) < 10:
+            time_button_text = BUTTON_FONT.render(time_button.text + time_left, True, (242, 5, 5))
+        else:
+            time_button_text = BUTTON_FONT.render(time_button.text + time_left, True, (0, 0, 0))
+        screen.blit(time_button_text, (time_button.rect.topleft[0] + 7, time_button.rect.topleft[1] + 10))
 
-        """TSP button box draw"""
-        tsp_button_text = BUTTON_FONT.render(tsp_button.text, True, (0, 0, 0))
-        screen.blit(tsp_button_text,
-                    (tsp_button.rect.topleft[0] + 10, tsp_button.rect.topleft[1] + 10))
-        #
-        # """LOAD button box draw"""
-        # load_button_text = SAVE_LOAD_FONT.render(load_button.text, True, (253, 196, 0))
-        # screen.blit(load_button_text,
-        #             (load_button.rect.topleft[0] + SCREEN_BUTTON_R / 4 + 40, load_button.rect.topleft[1] + 7))
+        """Catches button box draw"""
+        catch_text = f"{catches_button.text}{catches}"
+        catch_button_text = BUTTON_FONT.render(catch_text, True, (0, 0, 0))
+        screen.blit(catch_button_text,
+                    (catches_button.rect.topleft[0] + 10, catches_button.rect.topleft[1] + 10))
+
+        """STOP button box draw"""
+        load_button_text = SAVE_LOAD_FONT.render(stop_button.text, True, (253, 196, 0))
+        screen.blit(load_button_text,
+                    (stop_button.rect.topleft[0] + SCREEN_BUTTON_R / 4 + 40, stop_button.rect.topleft[1] + 7))
         #
         # """SAVE button box draw"""
         # save_button_text = SAVE_LOAD_FONT.render(save_button.text, True, (253, 196, 0))
@@ -475,73 +503,87 @@ class GUI:
 
     """------------------> END Draw Methods <-----------------"""
 
-    shortest_counter = 0
-    path_src = -1
-
     def display(self, graph):
         # global first
         global start
         min_max(graph)
         node_display = -1
+        try:
+            while self.client.is_running() == 'true':
 
+                is_moved = False
+                for e in pygame.event.get():
+                    if e.type == pygame.QUIT:
+                        self.client.stop_connection()
+                        self.client.stop()
+                        exit(0)
 
-        while self.client.is_running() == 'true':
-            is_moved = False
-            for e in pygame.event.get():
-                if e.type == pygame.QUIT:
-                    pygame.quit()
-                    exit(0)
+                self.update_game()
+                self.update_info()
 
-            self.update_game()
+                # refresh rate
+                clock.tick(60)
+                #
 
-            # refresh rate
-            clock.tick(60)
-            #
+                BackGround = Background("../data/BackgroundPics/Orbis_Ship.jpeg", [0, 0])
+                screen.fill((210, 180, 140))
+                screen.blit(BackGround.image, BackGround.rect)
+                self.draw(graph, node_display)
+                pygame.display.update()
 
-            BackGround = Background("../data/BackgroundPics/Orbis_Ship.jpeg", [0, 0])
-            screen.fill((210, 180, 140))
-            screen.blit(BackGround.image, BackGround.rect)
-            self.draw(graph, node_display)
-            pygame.display.update()
+                for e in pygame.event.get():
+                    if e.type == pygame.QUIT:
+                        self.client.stop()
+                    if e.type == pygame.MOUSEBUTTONDOWN:
+                        if stop_button.rect.collidepoint(e.pos):
+                            stop_button.press()
+                            if stop_button.is_clicked:
+                                self.client.stop()
+                                self.client.stop_connection()
+                                sys.exit()
 
-            # choose next edge
-            for a in self.game.agent_list:
-                ag: agent = a
-                if ag.dest == -1:
-                    if ag.src == ag.explore[0]:
-                        if ag.targets[ag.src]:
-                            ag.attack_mode = True
-                        else:
-                            ag.attack_mode = False
+                # choose next edge
+                for a in self.game.agent_list:
+                    ag: agent = a
+                    if ag.dest == -1:
+                        if ag.src == ag.explore[0]:
+                            if ag.targets[ag.src]:
+                                ag.attack_mode = True
+                            else:
+                                ag.attack_mode = False
 
-                    print(self.client.get_agents())
-                    print(ag.explore)
-                    if ag.explore.__len__() > 1:
-                        ag.explore.pop(0)
-                        next_node = ag.explore[0]
-                        print("Node: ", next_node)
-                        self.client.choose_next_edge(
-                            '{"agent_id":' + str(ag.id) + ', "next_node_id":' + str(next_node) + '}')
+                        print(self.client.get_agents())
+                        print(ag.explore)
+                        if ag.explore.__len__() > 1:
+                            ag.explore.pop(0)
+                            next_node = ag.explore[0]
+                            print("Node: ", next_node)
+                            self.client.choose_next_edge(
+                                '{"agent_id":' + str(ag.id) + ', "next_node_id":' + str(next_node) + '}')
 
-                # if ag.attack_mode:
-                #     if self.game.attack(ag):
-                #         self.client.move()
-                #         is_moved = True
-                #         ag.attack_mode = False
+                    # if ag.attack_mode:
+                    #     if self.game.attack(ag):
+                    #         self.client.move()
+                    #         is_moved = True
+                    #         ag.attack_mode = False
 
-            ttl = self.client.time_to_end()
-            print(ttl, self.client.get_info())
-            end = time.time()
+                ttl = self.client.time_to_end()
+                print(ttl, self.client.get_info())
+                end = time.time()
 
-            if first:
-                time.sleep(0.1)
-            else:
-                time.sleep(0.1 - (end - start))
+                # if first:
+                #     time.sleep(0.1)
+                # else:
+                #     time.sleep(0.1 - (end - start))
 
-            start = time.time()
-            if not is_moved:
-                self.client.move()
-            # print(self.client.get_info())
+                start = time.time()
+                if not is_moved:
+                    self.client.move()
+        except:
+            ConnectionResetError(WindowsError)
+        # self.client.stop_connection()
+        sys.exit()
+        # print(self.client.get_info())
 
     # def stop_other_buttons(self, tsp=False, shortest=False, center=False, load=False):
     #     if center:
@@ -579,13 +621,13 @@ class GUI:
     #             cities.clear()
 
 
-center_button = Button(pygame.Rect(SCREEN_TOPLEFT, (SCREEN_BUTTON_R, 40)), (0, 0, 0), "STOP")
-shortest_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0),
-                         "TIME")
-tsp_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 2, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0,),
-                    "Catches")
-# load_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 3, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0,),
-#                      "LOAD")
+moves_button = Button(pygame.Rect(SCREEN_TOPLEFT, (SCREEN_BUTTON_R, 40)), (0, 0, 0), "Moves: ")
+time_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0),
+                     "Time Left: ")
+catches_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 2, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0,),
+                        "Catches: ")
+stop_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 3, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0,),
+                     "STOP")
 # save_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 4, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0,),
 #                      "SAVE")
 # action_button = ActionButton(pygame.Rect((screen.get_rect().right - SCREEN_BUTTON_R / 2, screen.get_height() - 40),
