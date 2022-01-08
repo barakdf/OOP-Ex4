@@ -64,7 +64,7 @@ print("Test: ", GameManager.agent_list)
 FONT = pygame.font.SysFont('Arial', 20, bold=True)
 # load the json string into SimpleNamespace Object
 
-
+GameManager.deploy_agents()
 graph_algo.plot_graph(client=client, game=GameManager)
 
 #

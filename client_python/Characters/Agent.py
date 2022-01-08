@@ -7,9 +7,10 @@ class agent:
         self.speed = speed
         self.pos = pos
 
-        self.explore = [self.src]
+        self.explore: list = [self.src]
         self.targets = targets
         self.weight = 0
+        self.attack_mode = False
 
     def __str__(self):
         return f'Agent : {self.id}, {self.value}, {self.src}, {self.dest}, {self.speed}, {self.pos}'
