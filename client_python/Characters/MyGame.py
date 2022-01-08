@@ -76,15 +76,15 @@ class MyGame:
             for a in self.agent_list:
                 ag: agent = self.agent_list[a]
 
-    def is_on_the_way(self, pokSrc: int, explore: list) -> tuple:
+    def is_on_the_way(self, pokSrc: int, pokDest: int, explore: list) -> tuple:
         temp = 0
 
         for e in explore:
             if 0 < e < explore.__len__() - 1:
                 temp += self.graph.edges_out[e][e + 1]  # weight
-
-            if explore[e] == pokSrc:
-                return True, temp
+            if e < explore.__len__() - 1:
+                if explore[e] == pokSrc and explore[e + 1] == pokDest:
+                    return True, temp
         return False, -1
 
     def allocte(self, listAgent: list, pok: pokemon):
