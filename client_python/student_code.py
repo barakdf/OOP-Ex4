@@ -4,6 +4,7 @@ OOP - Ex4
 Very simple GUI example for python client to communicates with the server and "play the game!"
 """
 import json
+import threading
 from types import SimpleNamespace
 
 import pygame
@@ -66,6 +67,8 @@ FONT = pygame.font.SysFont('Arial', 20, bold=True)
 
 GameManager.deploy_agents()
 graph_algo.plot_graph(client=client, game=GameManager)
+
+
 
 #
 #  # get data proportions

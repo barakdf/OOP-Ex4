@@ -11,7 +11,7 @@ from client_python.src.GraphAlgo import GraphAlgo
 from client_python.src.Node import Node
 
 numOfAgents = 0
-EPS = 0.01
+EPS = 0.1
 
 
 class MyGame:
@@ -94,6 +94,12 @@ class MyGame:
                     path = shortest[1]
 
         currAgent.targets[pok.p_src] = True
+        if currAgent.pokemon_radar.__contains__(pok.p_src):
+            currAgent.pokemon_radar[pok.p_src].append(pok)
+        else:
+            currAgent.pokemon_radar[pok.p_src] = []
+            currAgent.pokemon_radar[pok.p_src].append(pok)
+
         if not on_the_way:
             print("PATHHHHHHHHHHHHHHH: ", path)
             currAgent.explore.pop()
@@ -165,8 +171,13 @@ class MyGame:
 
         return math.fabs(dis - pokDist)
 
-    def attack(self) -> bool:
-        pass
+    def attack(self, ag: agent) -> bool:
+        for i in range(ag.pokemon_radar[ag.src].__len__()):
+            pok_pos = ag.pokemon_radar[ag.src][i].pos
+            if math.dist(ag.get_pos(), (float(pok_pos[0]), float(pok_pos[1]), float(pok_pos[2]))) < EPS:
+                return True
+
+        return False
 
     def __str__(self) -> str:
         return super().__str__()
