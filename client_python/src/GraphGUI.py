@@ -191,6 +191,8 @@ tsp_ans = {}
 cities = []
 start_tsp = False
 
+""" --------------------------------------------> GUI <--------------------------------------------------------"""
+
 
 class GUI:
     def __init__(self, graph_, client: Client, game):
@@ -494,11 +496,22 @@ class GUI:
             pygame.display.update()
 
             # choose next edge
-            for agent in self.game.agent_list:
-                if agent.dest == -1:
-                    next_node = (agent.src - 1) % self.graph.v_size()
-                    self.client.choose_next_edge(
-                        '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
+            for a in self.game.agent_list:
+                ag: agent = a
+                if ag.dest == -1:
+                    if ag.src == ag.explore[0]:
+                        if ag.targets[ag.src]:
+                            ag.attack_mode = True
+
+                    print(self.client.get_agents())
+                    print(ag.explore)
+                    if ag.explore.__len__() > 1:
+                        ag.explore.pop(0)
+                        next_node = ag.explore[0]
+                        print("Node: ", next_node)
+                        self.client.choose_next_edge(
+                            '{"agent_id":' + str(ag.id) + ', "next_node_id":' + str(next_node) + '}')
+                        # ag.explore.pop(0)
                     ttl = self.client.time_to_end()
                     print(ttl, self.client.get_info())
 

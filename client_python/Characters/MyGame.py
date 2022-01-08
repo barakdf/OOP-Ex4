@@ -50,7 +50,7 @@ class MyGame:
 
             self.add_pokemon(pok)
 
-        print(self.pokemon_list.__repr__())
+        # print(self.pokemon_list.__repr__())
 
         """Add Agent from JSON"""
 
@@ -63,10 +63,7 @@ class MyGame:
                             targets=self.nodeList)
             self.add_agent(t_agent)
 
-        if not self.deployed:
-            self.deploy_agents()
-        else:
-            self.Call_Of_Duty()
+        self.Call_Of_Duty()
 
     def Call_Of_Duty(self):
         for p in range(self.pokemon_list.__len__()):
@@ -98,7 +95,9 @@ class MyGame:
 
         currAgent.targets[pok.p_src] = True
         if not on_the_way:
-            for i in range(path.__len__()):
+            print("PATHHHHHHHHHHHHHHH: ", path)
+            currAgent.explore.pop()
+            for i in range(0, path.__len__()):
                 currAgent.explore.append(path[i])
             currAgent.explore.append(pok.p_dest)
         pok.taken = True
@@ -165,6 +164,9 @@ class MyGame:
         pokDist = math.dist(srcPos, pokPos) + math.dist(pokPos, destPos)
 
         return math.fabs(dis - pokDist)
+
+    def attack(self) -> bool:
+        pass
 
     def __str__(self) -> str:
         return super().__str__()
