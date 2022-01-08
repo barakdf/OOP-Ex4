@@ -24,15 +24,10 @@ class MyGame:
 
     def add_pokemon(self, pokemon: Pokemon):
         self.pokemon_list.append(pokemon)
-        self.pokemon_list.sort(key=pokemon.value, reverse=True)
+        # self.pokemon_list.sort(key=pokemon.value, reverse=True)
 
     def add_agent(self, agent: Agent):
         self.agent_list.append(agent)
-
-
-
-
-
 
     def update_list(self, p_json: str, a_json: str):
         global numOfAgents
@@ -61,26 +56,19 @@ class MyGame:
                             dest=a["Agent"]["dest"], speed=a["Agent"]["speed"], pos=a["Agent"]["pos"].split(","))
             self.add_agent(t_agent)
 
-
-        if self.deployed:
-            for a in self.agent_list:
-                pass
-
-
-
-
-
-
-
+        self.deploy_agents()
 
     def deploy_agents(self) -> bool:
         for a in self.agent_list:
             max_val = 0
-            for p in self.pokemon_list:
-                if max_val < self.pokemon_list.__getitem__(p):
-                    max_val = self.pokemon_list.__getitem__(p)
+            for p in range(len(self.pokemon_list)):
+                x: pokemon = self.pokemon_list[p]
+
+                if max_val < x.value:
+                    max_val = x.value
 
 
+        return True
 
     def numAgents(self, info: str) -> int:
         return int(json.loads(info)["GameServer"]["agents"])
@@ -110,8 +98,6 @@ class MyGame:
         # print(min_dist)
         return curr_pos
 
-
-
     def is_on(self, pokPos: tuple, srcPos: tuple, destPos: tuple) -> float:
         src_x_y = (srcPos[0], srcPos[1])
         dest_x_y = (destPos[0], destPos[1])
@@ -120,6 +106,12 @@ class MyGame:
         pokDist = math.dist(srcPos, pokPos) + math.dist(pokPos, destPos)
 
         return math.fabs(dis - pokDist)
+
+    def __str__(self) -> str:
+        return super().__str__()
+
+    def __repr__(self) -> str:
+        return super().__repr__()
 
 # #:[{"Pokemon":{"value":5.0,"type":-1,"pos":"35.197656770719604,32.10191878639921,0.0"}}]}
 # if __name__ == '__main__':
