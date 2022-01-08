@@ -1,5 +1,5 @@
 class agent:
-    def __init__(self, id: int, value: float, src: int, dest: int, speed: int, pos: tuple):
+    def __init__(self, id: int, value: float, src: int, dest: int, speed: int, pos: tuple, targets: dict):
         self.id = id
         self.value = value
         self.src = src
@@ -8,6 +8,10 @@ class agent:
         self.pos = pos
 
         self.explore = []
+        self.targets = targets
+
+
+
 
     def __str__(self):
         return f'Agent : {self.id}, {self.value}, {self.src}, {self.dest}, {self.speed}, {self.pos}'
@@ -17,3 +21,4 @@ class agent:
 
     def get_pos(self) -> tuple:
         return self.pos
+
