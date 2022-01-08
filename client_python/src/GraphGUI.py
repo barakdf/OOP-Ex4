@@ -506,7 +506,7 @@ class GUI:
                     print(ttl, self.client.get_info())
 
             self.client.move()
-            print(self.client.get_info())
+            # print(self.client.get_info())
 
     # def stop_other_buttons(self, tsp=False, shortest=False, center=False, load=False):
     #     if center:

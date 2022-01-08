@@ -52,6 +52,7 @@ for i in range(GameManager.numAgents(client.get_info())):
 
 pok_str = client.get_pokemons()
 agent_str = client.get_agents()
+print(GameManager.find_edge((35.197656770719604, 32.10191878639921, 0.0), -1))
 GameManager.update_list(p_json=pok_str, a_json=agent_str)
 
 print(pok_str)

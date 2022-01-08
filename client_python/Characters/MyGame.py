@@ -1,4 +1,5 @@
 import json
+import math
 
 import numpy
 
@@ -37,6 +38,10 @@ class MyGame:
             pok = pokemon(value=i["Pokemon"]["value"], edge_type=i["Pokemon"]["type"],
                           pos=i["Pokemon"]["pos"].split(","))
 
+            # edge_pos = self.find_edge(pokPos=pok.pos, type=pok.edge_type)
+            # pok.p_src, pok.p_dest = edge_pos[0], edge_pos[1]
+            # print("Pokemon val: ", pok.value, "POS: ", pok.p_src, pok.p_dest)
+
             self.add_pokemon(pok)
 
         """Add Agent from JSON"""
@@ -58,31 +63,35 @@ class MyGame:
         return np.sqrt(np.sum((a - b) ** 2))
 
     def find_edge(self, pokPos: tuple, type: int) -> tuple:
+        min_dist = math.inf
+        curr_pos = ()
         for i in self.graph.get_all_v():
             src: Node = self.graph.get_all_v().get(i)
             for j in self.graph.all_out_edges_of_node(src.id):
                 dest: Node = self.graph.get_all_v().get(j)
-                print(src.id, "-->", dest.id)
+                # print(src.id, "-->", dest.id)
 
                 if type < 0:
-                    if src.id > dest.id and self.is_on(pokPos, src.pos, dest.pos):
-                        return src.id, dest.id
-
+                    if src.id > dest.id and self.is_on(pokPos, src.pos, dest.pos) < min_dist:
+                        min_dist = self.is_on(pokPos, src.pos, dest.pos)
+                        curr_pos = (src.id, dest.id)
                 else:
-                    if src.id < dest.id and self.is_on(pokPos, src.pos, dest.pos):
-                        return src.id, dest.id
+                    if src.id < dest.id and self.is_on(pokPos, src.pos, dest.pos) < min_dist:
+                        min_dist = self.is_on(pokPos, src.pos, dest.pos)
+                        curr_pos = (src.id, dest.id)
+        # print(min_dist)
+        return curr_pos
 
-    def is_on(self, pokPos: tuple, srcPos: tuple, destPos: tuple) -> bool:
-        dis = self.dist(srcPos, destPos)
 
-        pokDist = self.dist(srcPos, pokPos) + self.dist(pokPos, destPos)
 
-        print((dis + EPS))
-        print('>')
-        print(pokDist)
-        print('>')
-        print(dis - EPS)
-        return dis + EPS > pokDist > dis - EPS
+    def is_on(self, pokPos: tuple, srcPos: tuple, destPos: tuple) -> float:
+        src_x_y = (srcPos[0], srcPos[1])
+        dest_x_y = (destPos[0], destPos[1])
+        dis = math.dist(src_x_y, dest_x_y)
+
+        pokDist = math.dist(srcPos, pokPos) + math.dist(pokPos, destPos)
+
+        return math.fabs(dis - pokDist)
 
 # #:[{"Pokemon":{"value":5.0,"type":-1,"pos":"35.197656770719604,32.10191878639921,0.0"}}]}
 # if __name__ == '__main__':
