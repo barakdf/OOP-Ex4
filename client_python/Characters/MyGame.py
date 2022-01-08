@@ -11,7 +11,7 @@ from client_python.src.DiGraph import DiGraph
 from client_python.src.Node import Node
 
 numOfAgents = 0
-EPS = 0.0001
+EPS = 0.01
 
 
 class MyGame:
@@ -57,19 +57,40 @@ class MyGame:
         b = np.array(y)
         return np.sqrt(np.sum((a - b) ** 2))
 
-    # def find_edge(self, pokPos: tuple, type: int):
-    #
-    #
-    #
-    #     for i in self.graph.get_all_v():
-    #         curr: Node = self.graph.get_all_v().get(i)
-    #
-    #         for j in self.graph.all_out_edges_of_node(curr.id):
-    #
-    #             if type < 0:
+    def find_edge(self, pokPos: tuple, type: int) -> tuple:
+        for i in self.graph.get_all_v():
+            src: Node = self.graph.get_all_v().get(i)
+            for j in self.graph.all_out_edges_of_node(src.id):
+                dest: Node = self.graph.get_all_v().get(j)
+                print(src.id, "-->", dest.id)
+
+                if type < 0:
+                    if src.id > dest.id and self.is_on(pokPos, src.pos, dest.pos):
+                        return src.id, dest.id
+
+                else:
+                    if src.id < dest.id and self.is_on(pokPos, src.pos, dest.pos):
+                        return src.id, dest.id
 
     def is_on(self, pokPos: tuple, srcPos: tuple, destPos: tuple) -> bool:
-        dist = self.dist(srcPos, destPos)
-        pokDist = self.dist(srcPos, pokPos) + self.dist(pokPos, destPos)
-        return dist > pokDist - EPS
+        dis = self.dist(srcPos, destPos)
 
+        pokDist = self.dist(srcPos, pokPos) + self.dist(pokPos, destPos)
+
+        print((dis + EPS))
+        print('>')
+        print(pokDist)
+        print('>')
+        print(dis - EPS)
+        return dis + EPS > pokDist > dis - EPS
+
+# #:[{"Pokemon":{"value":5.0,"type":-1,"pos":"35.197656770719604,32.10191878639921,0.0"}}]}
+# if __name__ == '__main__':
+#     a = (5.20319591121872, 32.1031462, 0.0)
+#     b = (35.19597880064568, 32.10154696638656, 0.0)
+#
+#     c = (35.197656770719604, 32.10191878639921, 0.0)
+#
+#     pok = pokemon(5, -1, c)
+#
+#
