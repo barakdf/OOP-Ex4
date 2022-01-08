@@ -1,3 +1,6 @@
+import threading
+import time
+
 import numpy
 import numpy as np
 import pygame
@@ -12,6 +15,8 @@ from client_python.client import Client
 from client_python.src import Node
 from data.BackgroundPics import *
 
+first = True
+start = 0
 pygame.font.init()
 FONT = pygame.font.SysFont("Ariel", 20)
 BUTTON_FONT = pygame.font.SysFont("Ariel", 30)
@@ -208,9 +213,9 @@ class GUI:
     #     self.graph_algo.load_from_json(file)
     #     self.display(self.graph_algo)
 
-    def init_graph(self, file: str):
-        self.graph_algo.load_from_json(file)
-        self.display(self.graph_algo)
+    # def init_graph(self, file: str):
+    #     self.graph_algo.load_from_json(file)
+    #     self.display(self.graph_algo)
 
     def update_game(self):
         for i in range(self.game.numAgents(self.client.get_info())):
@@ -474,10 +479,14 @@ class GUI:
     path_src = -1
 
     def display(self, graph):
+        # global first
+        global start
         min_max(graph)
         node_display = -1
 
+
         while self.client.is_running() == 'true':
+            is_moved = False
             for e in pygame.event.get():
                 if e.type == pygame.QUIT:
                     pygame.quit()
@@ -502,6 +511,8 @@ class GUI:
                     if ag.src == ag.explore[0]:
                         if ag.targets[ag.src]:
                             ag.attack_mode = True
+                        else:
+                            ag.attack_mode = False
 
                     print(self.client.get_agents())
                     print(ag.explore)
@@ -511,11 +522,25 @@ class GUI:
                         print("Node: ", next_node)
                         self.client.choose_next_edge(
                             '{"agent_id":' + str(ag.id) + ', "next_node_id":' + str(next_node) + '}')
-                        # ag.explore.pop(0)
-                    ttl = self.client.time_to_end()
-                    print(ttl, self.client.get_info())
 
-            self.client.move()
+                # if ag.attack_mode:
+                #     if self.game.attack(ag):
+                #         self.client.move()
+                #         is_moved = True
+                #         ag.attack_mode = False
+
+            ttl = self.client.time_to_end()
+            print(ttl, self.client.get_info())
+            end = time.time()
+
+            if first:
+                time.sleep(0.1)
+            else:
+                time.sleep(0.1 - (end - start))
+
+            start = time.time()
+            if not is_moved:
+                self.client.move()
             # print(self.client.get_info())
 
     # def stop_other_buttons(self, tsp=False, shortest=False, center=False, load=False):

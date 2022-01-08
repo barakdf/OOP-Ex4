@@ -11,6 +11,7 @@ class agent:
         self.targets = targets
         self.weight = 0
         self.attack_mode = False
+        self.pokemon_radar = {}
 
     def __str__(self):
         return f'Agent : {self.id}, {self.value}, {self.src}, {self.dest}, {self.speed}, {self.pos}'
@@ -19,4 +20,5 @@ class agent:
         return f'Agent : {self.id}, {self.value}, {self.src}, {self.dest}, {self.speed}, {self.pos}'
 
     def get_pos(self) -> tuple:
-        return self.pos
+        float_pos = (float(self.pos[0]), float(self.pos[1]), float(self.pos[2]))
+        return float_pos
