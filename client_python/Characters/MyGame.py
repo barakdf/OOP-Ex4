@@ -25,15 +25,36 @@ class MyGame:
         for i in range(self.graph.v_size()):
             self.nodeList[i] = False
 
+    """ 
+    Add pokemon to the pokemon list 
+    and sort  the list by value of the pokemon  
+    """
     def add_pokemon(self, pokemon: Pokemon):
         self.pokemon_list.append(pokemon)
         self.pokemon_list.sort()
 
+
+    """ 
+    Add Agent to the agent list 
+    """
     def add_agent(self, agent: Agent):
         self.agent_list.append(agent)
 
+
+
+
+    """
+    This method get a string of pokemon and string of agent
+    from the client and load them to object pokemon 
+    and object agent .
+   
+    @param p_json : string of pokemon in a json Format      
+    @param a_json : string of agent   in a json Format  
+    """
     def update_list(self, p_json: str, a_json: str):
         global numOfAgents
+
+
         """Add Pokemon from JSON"""
         p_dic = json.loads(p_json)
         self.pokemon_list.clear()
@@ -42,18 +63,17 @@ class MyGame:
             pok = pokemon(value=i["Pokemon"]["value"], edge_type=i["Pokemon"]["type"],
                           pos=i["Pokemon"]["pos"].split(","))
 
+
+
             """ find the edge of each pokemon"""
             pokemon_pos = (float(pok.pos[0]), float(pok.pos[1]), float(pok.pos[2]))
             edge_pos = self.find_edge(pokPos=pokemon_pos, type=pok.edge_type)
             pok.p_src, pok.p_dest = edge_pos[0], edge_pos[1]
-            # print("Pokemon val: ", pok.value, "POS: ", pok.p_src, pok.p_dest)
 
             self.add_pokemon(pok)
 
-        # print(self.pokemon_list.__repr__())
 
         """Add Agent from JSON"""
-
         agent_dic = json.loads(a_json)
         self.agent_list.clear()
 
@@ -65,12 +85,27 @@ class MyGame:
 
         self.Call_Of_Duty()
 
+
+
+    """
+    This method set pokemon for each agent. 
+    """
     def Call_Of_Duty(self):
         for p in range(self.pokemon_list.__len__()):
             pok: pokemon = self.pokemon_list[p]
             if not pok.taken:
                 self.allocate(self.agent_list, pok)
 
+
+    """
+    This method is the main algo of the game
+    the method allocate and define for each agent his path
+    and the Pokemon to catch . 
+
+
+    @param listAgent : list of agent     
+    @param pok : Pokemon. 
+    """
     def allocate(self, listAgent: list, pok: pokemon):
         currAgent = None
         path = []
@@ -101,13 +136,20 @@ class MyGame:
             currAgent.pokemon_radar[pok.p_src].append(pok)
 
         if not on_the_way:
-            print("PATHHHHHHHHHHHHHHH: ", path)
+
             currAgent.explore.pop()
             for i in range(0, path.__len__()):
                 currAgent.explore.append(path[i])
             currAgent.explore.append(pok.p_dest)
         pok.taken = True
 
+
+    """
+    @param pokSrc : the source of the edge the pokemon is on      
+    @param pokDest : the destination  of the edge the pokemon is on  
+    @:param explore :list of the path of the agent 
+    :return:  true if the edge on which the Pokemon is located is in the agent path list  
+    """
     def is_on_the_way(self, pokSrc: int, pokDest: int, explore: list) -> tuple:
         temp = 0
 
@@ -119,6 +161,12 @@ class MyGame:
                     return True, temp
         return False, -1
 
+
+
+
+    """
+    This method deploy the agents on the graph 
+    """
     def deploy_agents(self) -> bool:
         for a in range(len(self.agent_list)):
             ag: agent = self.agent_list[a]
@@ -134,14 +182,28 @@ class MyGame:
 
         return True
 
+    """
+    :param info : game information
+    :return : the number of the agent for the current game 
+    """
     def numAgents(self, info: str) -> int:
         return int(json.loads(info)["GameServer"]["agents"])
 
-    def dist(self, x, y):
-        a = np.array(x)
-        b = np.array(y)
-        return np.sqrt(np.sum((a - b) ** 2))
 
+
+    # def dist(self, x, y):
+    #     a = np.array(x)
+    #     b = np.array(y)
+    #     return np.sqrt(np.sum((a - b) ** 2))
+
+
+
+    """
+    :param pokPos : the position of the pokemon in the graph 
+    :param type : pokemon type if negative then the scr < dest  else  src > dest 
+    :return : the edge on which pokemon is on 
+    
+    """
     def find_edge(self, pokPos: tuple, type: int) -> tuple:
         min_dist = math.inf
         curr_pos = ()
@@ -149,7 +211,7 @@ class MyGame:
             src: Node = self.graph.get_all_v().get(i)
             for j in self.graph.all_out_edges_of_node(src.id):
                 dest: Node = self.graph.get_all_v().get(j)
-                # print(src.id, "-->", dest.id)
+
 
                 if type < 0:
                     if src.id > dest.id and self.is_on(pokPos, src.pos, dest.pos) < min_dist:
@@ -159,9 +221,16 @@ class MyGame:
                     if src.id < dest.id and self.is_on(pokPos, src.pos, dest.pos) < min_dist:
                         min_dist = self.is_on(pokPos, src.pos, dest.pos)
                         curr_pos = (src.id, dest.id)
-        # print(min_dist)
+
         return curr_pos
 
+
+    """
+    :param pokPos : the position of the Pokemon in graph 
+    :param srcPos  : src node
+    :param destPos : dest node
+    :return the destination  of the pokemon to the edge  
+    """
     def is_on(self, pokPos: tuple, srcPos: tuple, destPos: tuple) -> float:
         src_x_y = (srcPos[0], srcPos[1])
         dest_x_y = (destPos[0], destPos[1])
@@ -170,6 +239,7 @@ class MyGame:
         pokDist = math.dist(srcPos, pokPos) + math.dist(pokPos, destPos)
 
         return math.fabs(dis - pokDist)
+
 
     def attack(self, ag: agent) -> bool:
         for i in range(ag.pokemon_radar[ag.src].__len__()):
