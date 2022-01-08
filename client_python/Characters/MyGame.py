@@ -98,7 +98,7 @@ class MyGame:
 
         currAgent.targets[pok.p_src] = True
         if not on_the_way:
-            for i in path:
+            for i in range(path.__len__()):
                 currAgent.explore.append(path[i])
             currAgent.explore.append(pok.p_dest)
         pok.taken = True
@@ -122,7 +122,8 @@ class MyGame:
                 if not curr_pok.taken:
                     ag.src = curr_pok.p_src
                     curr_pok.taken = True
-                    ag.explore.append(curr_pok.pos)
+                    if ag.explore[0] != curr_pok.p_src:
+                        ag.explore[0] = curr_pok.p_src
                     ag.explore.append(curr_pok.p_dest)
         self.deployed = True
 
