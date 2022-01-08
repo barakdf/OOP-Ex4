@@ -6,10 +6,10 @@ import math
 from pygame import gfxdraw
 from tkinter import filedialog as fd
 
-from client_python.Characters.MyGame import MyGame
+# from client_python.src.GraphAlgo import *
+from client_python.Characters.MyGame import *
 from client_python.client import Client
 from client_python.src import Node
-from client_python.src.GraphAlgo import GraphAlgo
 from data.BackgroundPics import *
 
 pygame.font.init()
@@ -193,12 +193,12 @@ start_tsp = False
 
 
 class GUI:
-    def __init__(self, graph, client: Client, game: MyGame):
-        self.graph_algo = GraphAlgo(graph)
+    def __init__(self, graph, client: Client, game):
+        # self.graph_algo = GraphAlgo(graph)
         self.game = game
         self.client = client
         self.client.start()
-        self.display(self.graph_algo)
+        self.display(graph=graph)
 
     # def __init__(self, file: str = None):
     #     graph = DiGraph()
@@ -471,8 +471,8 @@ class GUI:
     shortest_counter = 0
     path_src = -1
 
-    def display(self, algo):
-        min_max(algo.get_graph())
+    def display(self, graph):
+        min_max(graph)
         node_display = -1
 
         while self.client.is_running() == 'true':
@@ -490,7 +490,7 @@ class GUI:
             BackGround = Background("../data/BackgroundPics/Orbis_Ship.jpeg", [0, 0])
             screen.fill((210, 180, 140))
             screen.blit(BackGround.image, BackGround.rect)
-            self.draw(algo.get_graph(), node_display)
+            self.draw(graph, node_display)
             pygame.display.update()
 
             # choose next edge

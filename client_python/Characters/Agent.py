@@ -7,18 +7,15 @@ class agent:
         self.speed = speed
         self.pos = pos
 
-        self.explore = []
+        self.explore = [self.src]
         self.targets = targets
-
-
-
+        self.weight = 0
 
     def __str__(self):
         return f'Agent : {self.id}, {self.value}, {self.src}, {self.dest}, {self.speed}, {self.pos}'
 
-    def repr(self):
+    def __repr__(self):
         return f'Agent : {self.id}, {self.value}, {self.src}, {self.dest}, {self.speed}, {self.pos}'
 
     def get_pos(self) -> tuple:
         return self.pos
-
