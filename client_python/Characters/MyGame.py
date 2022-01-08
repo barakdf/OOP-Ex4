@@ -73,4 +73,3 @@ class MyGame:
         pokDist = self.dist(srcPos, pokPos) + self.dist(pokPos, destPos)
         return dist > pokDist - EPS
 
-    

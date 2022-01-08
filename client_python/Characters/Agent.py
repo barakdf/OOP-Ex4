@@ -7,6 +7,8 @@ class agent:
         self.speed = speed
         self.pos = pos
 
+        self.explore = []
+
     def __str__(self):
         return f'Agent : {self.id}, {self.value}, {self.src}, {self.dest}, {self.speed}, {self.pos}'
 
