@@ -22,9 +22,15 @@ class MyGame:
         self.graph = graph
         self.deployed = False
 
+    def __str__(self) -> str:
+        return super().__str__()
+
+    def __repr__(self) -> str:
+        return super().__repr__()
+
     def add_pokemon(self, pokemon: Pokemon):
         self.pokemon_list.append(pokemon)
-        self.pokemon_list.sort(key=pokemon.value, reverse=True)
+        self.pokemon_list.sort(reverse=True)
 
     def add_agent(self, agent: Agent):
         self.agent_list.append(agent)
@@ -50,6 +56,8 @@ class MyGame:
             # print("Pokemon val: ", pok.value, "POS: ", pok.p_src, pok.p_dest)
 
             self.add_pokemon(pok)
+
+        print(self.pokemon_list)
 
         """Add Agent from JSON"""
 
@@ -120,6 +128,8 @@ class MyGame:
         pokDist = math.dist(srcPos, pokPos) + math.dist(pokPos, destPos)
 
         return math.fabs(dis - pokDist)
+
+
 
 # #:[{"Pokemon":{"value":5.0,"type":-1,"pos":"35.197656770719604,32.10191878639921,0.0"}}]}
 # if __name__ == '__main__':

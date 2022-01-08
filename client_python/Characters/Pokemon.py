@@ -16,3 +16,6 @@ class pokemon:
 
     def get_pos(self):
         return self.pos
+
+    def __lt__(self, other):
+        return self.value < other.value
