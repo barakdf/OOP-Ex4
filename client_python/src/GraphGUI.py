@@ -33,9 +33,6 @@ class Background(pygame.sprite.Sprite):
         self.rect.left, self.rect.top = location
 
 
-
-
-
 # this algorithm is not mine. https://stackoverflow.com/questions/13053061/circle-line-intersection-points
 # algorithm to find the intersection point of segment and circle.
 def node_line_inter(pointA, pointB, pointC, radius):
@@ -496,7 +493,7 @@ class GUI:
             self.draw(algo.get_graph(), node_display)
             pygame.display.update()
 
-            #     # choose next edge
+            # choose next edge
             for agent in self.game.agent_list:
                 if agent.dest == -1:
                     next_node = (agent.src - 1) % self.graph_algo.get_graph().v_size()
