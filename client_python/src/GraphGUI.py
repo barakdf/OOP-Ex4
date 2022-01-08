@@ -193,12 +193,12 @@ start_tsp = False
 
 
 class GUI:
-    def __init__(self, graph, client: Client, game):
-        # self.graph_algo = GraphAlgo(graph)
+    def __init__(self, graph_, client: Client, game):
+        self.graph = graph_
         self.game = game
         self.client = client
         self.client.start()
-        self.display(graph=graph)
+        self.display(graph=self.graph)
 
     # def __init__(self, file: str = None):
     #     graph = DiGraph()
@@ -496,7 +496,7 @@ class GUI:
             # choose next edge
             for agent in self.game.agent_list:
                 if agent.dest == -1:
-                    next_node = (agent.src - 1) % self.graph_algo.get_graph().v_size()
+                    next_node = (agent.src - 1) % self.graph.v_size()
                     self.client.choose_next_edge(
                         '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
                     ttl = self.client.time_to_end()
