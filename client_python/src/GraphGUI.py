@@ -419,22 +419,8 @@ class GUI:
 
                 gfxdraw.aacircle(screen, int(x), int(y), node_radius, (0, 0, 0))
 
-                if node.id in center_id:
-                    gfxdraw.aacircle(screen, int(x), int(y), node_radius - 1, (250, 0, 0))
-                    gfxdraw.filled_circle(screen, int(x), int(y), node_radius - 1, (250, 0, 0))
-
-
-                elif shortest_path.get("list"):
-                    if node.id in shortest_path["list"]:
-                        gfxdraw.aacircle(screen, int(x), int(y), node_radius - 1, (192, 250, 247))
-                        gfxdraw.filled_circle(screen, int(x), int(y), node_radius - 1, (192, 250, 247))
-                    else:
-                        gfxdraw.aacircle(screen, int(x), int(y), node_radius - 1, (250, 204, 58))
-                        gfxdraw.filled_circle(screen, int(x), int(y), node_radius - 1, (250, 204, 58))
-
-                else:
-                    gfxdraw.aacircle(screen, int(x), int(y), node_radius - 1, (250, 204, 58))
-                    gfxdraw.filled_circle(screen, int(x), int(y), node_radius - 1, (250, 204, 58))
+                gfxdraw.aacircle(screen, int(x), int(y), node_radius - 1, (250, 204, 58))
+                gfxdraw.filled_circle(screen, int(x), int(y), node_radius - 1, (250, 204, 58))
 
                 screen.blit(src_text, (x - (node_radius / 2), y - (node_radius / 2)))
                 try:
@@ -464,14 +450,8 @@ class GUI:
                             else:
                                 src_arrow = collition_src[i + 1]
 
-                        if shortest_path.get("list"):
 
-                            if (node.id, dest.id) in shortest_path["edges"]:
-                                self.arrow(src_arrow, dest_arrow, 17, 7, color=(192, 250, 247))
-                            else:
-                                self.arrow(src_arrow, dest_arrow, 17, 7, color=(255, 255, 255))
-                        else:
-                            self.arrow(src_arrow, dest_arrow, 17, 7, color=(255, 255, 255))
+                        self.arrow(src_arrow, dest_arrow, 17, 7, color=(255, 255, 255))
                 except TypeError:
                     pass
 
