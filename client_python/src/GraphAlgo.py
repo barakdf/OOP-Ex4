@@ -10,6 +10,7 @@ from client_python.src import Node
 from client_python.src.DiGraph import DiGraph
 from client_python.src.GraphGUI import *
 from client_python.src.PriorityQueue import PriorityQueue
+from client_python.src.test_GraphAlgo import *
 
 PORT = 6666
 # server host (default localhost 127.0.0.1)
@@ -69,6 +70,39 @@ class GraphAlgo:
             print(Exception.args)
             return False
 
+    def load_from_json_by_file(self, file_name: str) -> bool:
+        try:
+
+            with open(file_name, "r") as f:
+                dic = {}
+                g = DiGraph()
+                dic = json.load(fp=f)
+
+            for n in dic["Nodes"]:
+                if len(n.keys()) == 1:
+                    x = random.randint(0, 100)
+                    y = random.randint(0, 100)
+
+                    pos = (x, y, 0)
+                    g.add_node(node_id=n["id"], pos=pos)
+
+                else:
+                    p = n["pos"].split(",")
+                    x = p[0]
+                    y = p[1]
+                    z = p[2]
+
+                    pos = (float(x), float(y), float(z))
+                    g.add_node(node_id=n["id"], pos=pos)
+
+            for e in dic["Edges"]:
+                g.add_edge(id1=e["src"], id2=e["dest"], weight=e["w"])
+
+            self.graph = g
+            return True
+        except Exception:
+            print(Exception.args)
+            return False
     """
     save_to_json:
         This method get a graph and save it in a json file
