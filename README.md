@@ -38,6 +38,6 @@ https://user-images.githubusercontent.com/74688329/148701575-2ddc3d32-014d-43d8-
 )
 
 *ScreenShots* :
-![screenshot1.png](<img width="1199" alt="Screenshot1" src="https://user-images.githubusercontent.com/74688329/148702273-2c8aa1ef-d7ed-4631-bf1d-d64d0cc581a6.png">
+![screenshot1.png](<img width="600" alt="Screenshot1" src="https://user-images.githubusercontent.com/74688329/148702273-2c8aa1ef-d7ed-4631-bf1d-d64d0cc581a6.png">
 )
 )
