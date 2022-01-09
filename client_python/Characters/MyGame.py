@@ -90,32 +90,32 @@ class MyGame:
                     for i in range(1, curr_path.__len__()):
                         ag.explore.append(curr_path[i])
 
-    def one_man_war(self, ag: agent, pok_list: list):
-        path: list = []
-        dic = {}
-        for p in pok_list:
-            pok: pokemon = p
-            pok.taken = True
-            ag.targets[pok.p_src] = True
-            path.append(pok.p_src)
-            dic[pok.p_src] = pok.p_dest
-        ttl = int(float(self.client.time_to_end()) / 1000)
-        final_path = self.graphAlgo.TSP(path, dic, ttl, ag.speed)[0]
-        if self.graphAlgo.TSP(path, dic, ttl, ag.speed)[1] < ttl + 1:
-            for i in pok_list:
-                self.allocate([ag], i)
-        else:
-            if ag.src == final_path[0]:
-                for a in range(1, final_path.__len__()):
-                    ag.explore.append(final_path[a])
-            else:
-                if self.deployed:
-                    ag.explore.pop(0)
-                shortest = self.graphAlgo.shortest_path(ag.src, final_path[0])[1]
-                for i in range(shortest.__len__() - 1):
-                    ag.explore.append(shortest[i])
-                for t in final_path:
-                    ag.explore.append(t)
+    # def one_man_war(self, ag: agent, pok_list: list):
+    #     path: list = []
+    #     dic = {}
+    #     for p in pok_list:
+    #         pok: pokemon = p
+    #         pok.taken = True
+    #         ag.targets[pok.p_src] = True
+    #         path.append(pok.p_src)
+    #         dic[pok.p_src] = pok.p_dest
+    #     ttl = int(float(self.client.time_to_end()) / 1000)
+    #     final_path = self.graphAlgo.TSP(path, dic, ttl, ag.speed)[0]
+    #     if self.graphAlgo.TSP(path, dic, ttl, ag.speed)[1] < ttl + 1:
+    #         for i in pok_list:
+    #             self.allocate([ag], i)
+    #     else:
+    #         if ag.src == final_path[0]:
+    #             for a in range(1, final_path.__len__()):
+    #                 ag.explore.append(final_path[a])
+    #         else:
+    #             if self.deployed:
+    #                 ag.explore.pop(0)
+    #             shortest = self.graphAlgo.shortest_path(ag.src, final_path[0])[1]
+    #             for i in range(shortest.__len__() - 1):
+    #                 ag.explore.append(shortest[i])
+    #             for t in final_path:
+    #                 ag.explore.append(t)
 
     def allocate(self, listAgent: list, pok: pokemon):
         currAgent = None

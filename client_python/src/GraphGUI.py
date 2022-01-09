@@ -236,10 +236,6 @@ class GUI:
 
     def update_game(self):
         pok_str = self.client.get_pokemons()
-        agent_str = self.client.get_agents()
-        # for i in range(self.game.numAgents(self.client.get_info())):
-        #     id = str(i)
-        #     self.client.add_agent("{\"id\":" + id + "}")
         self.game.update_list(p_json=pok_str)
 
     def my_scale(self, data, x=False, y=False):
