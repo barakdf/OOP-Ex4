@@ -252,7 +252,7 @@ class GraphAlgo:
         @return: List of the the best route , weight of the route list 
     """
 
-    def TSP(self, node_lst: List[int], dic: dict) -> (List[int], float):
+    def TSP(self, node_lst: List[int], dic: dict, time: int, ag_speed: int) -> (List[int], float):
         self.get_graph().get_all_v().get(23)
         graph_algo = copy.deepcopy(self.get_graph())
         ansW = math.inf
@@ -272,9 +272,8 @@ class GraphAlgo:
             # list of all the node except the current
             miss = sort_node_list.copy()
             miss.remove(node.id)
-
             # find the path
-            list_t = self.tsp_rec(path_int, miss, 0, math.inf, dic, graph_algo)
+            list_t = self.tsp_rec(path_int, miss, 0, math.inf, dic, graph_algo, time, ag_speed)
 
             # Calculate the weight of the route
             curr_weight = self.Calculate_weight(list_t)
@@ -291,9 +290,11 @@ class GraphAlgo:
 
         return ans, ansW
 
-    def tsp_rec(self, path, miss, val, final_v, dic: dict, graph_algo):
-        if len(miss) == 0:
-            if dic.__contains__(path[path.__len__()-1].id):
+    def tsp_rec(self, path, miss, val, final_v, dic: dict, graph_algo, time, ag_speed):
+        if len(miss) == 0 or val / ag_speed >= time:
+            print("TIME", time)
+            print("SPEED", val / ag_speed)
+            if dic.__contains__(path[path.__len__() - 1].id):
                 path.append(graph_algo.get_all_v().get(dic[path[path.__len__() - 1].id]))
             return path
         i = 0
@@ -306,7 +307,7 @@ class GraphAlgo:
                 path.append(graph_algo.get_all_v().get(dic[path[path.__len__() - 1].id]))
                 t_val += graph_algo.all_out_edges_of_node(path[path.__len__() - 2].id).get(path[path.__len__() - 1].id)
 
-            temp_list = self.tsp_rec(t_path, t_miss, t_val, final_v, dic, graph_algo)
+            temp_list = self.tsp_rec(t_path, t_miss, t_val, final_v, dic, graph_algo, time, ag_speed)
 
             if t_val < final_v:
                 path = temp_list

@@ -33,54 +33,30 @@ pygame.font.init()
 client = Client()
 client.start_connection(HOST, PORT)
 
-
-
-
-
-
-
 """ INIT GRAPH """
-
-
 
 graph_json = client.get_graph()
 graph = DiGraph()
 graph_algo = GraphAlgo(graph)
 
-
 # load the json string into grape Object
 graph_algo.load_from_json(graph_json)
 
+GameManager = MyGame(graph=graph_algo.get_graph(), client=client)
 
-GameManager = MyGame(graph=graph_algo.get_graph())
-
-
-"""add agent """
-for i in range(GameManager.numAgents(client.get_info())):
-    id = str(i)
-    client.add_agent("{\"id\":" + id + "}")
-
-
+# """add agent """
+# for i in range(GameManager.numAgents(client.get_info())):
+#     id = str(i)
+#     client.add_agent("{\"id\":" + id + "}")
 
 pok_str = client.get_pokemons()
-agent_str = client.get_agents()
 
-
-GameManager.update_list(p_json=pok_str, a_json=agent_str)
-
-
-
+GameManager.update_list(p_json=pok_str)
 
 FONT = pygame.font.SysFont('Arial', 20, bold=True)
 
-
-GameManager.deploy_agents()
+# GameManager.deploy_agents()
 graph_algo.plot_graph(client=client, game=GameManager)
-
-
-
-
-
 
 # # this commnad starts the server - the game is running now
 # client.start()

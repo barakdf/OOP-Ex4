@@ -1,5 +1,6 @@
 import json
 import math
+from random import random
 
 import numpy as np
 
@@ -10,20 +11,23 @@ from client_python.src.DiGraph import DiGraph
 from client_python.src.GraphAlgo import GraphAlgo
 from client_python.src.Node import Node
 
-numOfAgents = 0
 EPS = 0.1
 
 
 class MyGame:
-    def __init__(self, graph: DiGraph):
+    def __init__(self, graph: DiGraph, client):
         self.pokemon_list = []
         self.agent_list = []
         self.graph = graph
         self.deployed = False
         self.graphAlgo = GraphAlgo(self.graph)
         self.nodeList = {}
+        self.center_point = self.graphAlgo.centerPoint()[0]
+
         for i in range(self.graph.v_size()):
             self.nodeList[i] = False
+        self.client = client
+        self.num_Of_Agents = self.numAgents(self.client.get_info())
 
     def add_pokemon(self, pokemon: Pokemon):
         self.pokemon_list.append(pokemon)
@@ -32,7 +36,7 @@ class MyGame:
     def add_agent(self, agent: Agent):
         self.agent_list.append(agent)
 
-    def update_list(self, p_json: str, a_json: str):
+    def update_list(self, p_json: str):
         global numOfAgents
         """Add Pokemon from JSON"""
         p_dic = json.loads(p_json)
@@ -46,17 +50,20 @@ class MyGame:
             pokemon_pos = (float(pok.pos[0]), float(pok.pos[1]), float(pok.pos[2]))
             edge_pos = self.find_edge(pokPos=pokemon_pos, type=pok.edge_type)
             pok.p_src, pok.p_dest = edge_pos[0], edge_pos[1]
-            # print("Pokemon val: ", pok.value, "POS: ", pok.p_src, pok.p_dest)
+            if not self.deployed and self.num_Of_Agents > 0:
+                self.client.add_agent("{\"id\":" + str(pok.p_src) + "}")
+                self.num_Of_Agents -= 1
+            self.deployed = True
 
             self.add_pokemon(pok)
 
-        # print(self.pokemon_list.__repr__())
-
+        while self.num_Of_Agents > 0:
+            self.client.add_agent("{\"id\":" + str(self.center_point) + "}")
+            self.num_Of_Agents -= 1
         """Add Agent from JSON"""
-
+        a_json: str = self.client.get_agents()
         agent_dic = json.loads(a_json)
         self.agent_list.clear()
-
         for a in agent_dic["Agents"]:
             t_agent = agent(id=a["Agent"]["id"], value=a["Agent"]["value"], src=a["Agent"]["src"],
                             dest=a["Agent"]["dest"], speed=a["Agent"]["speed"], pos=a["Agent"]["pos"].split(","),
@@ -66,37 +73,49 @@ class MyGame:
         self.Call_Of_Duty()
 
     def Call_Of_Duty(self):
-        if self.agent_list.__len__() == 1:
-            self.one_man_war(self.agent_list[0], self.pokemon_list)
-        else:
-            for p in range(self.pokemon_list.__len__()):
-                pok: pokemon = self.pokemon_list[p]
-                if not pok.taken:
-                    self.allocate(self.agent_list, pok)
+        # if self.agent_list.__len__() == 1:
+        #     self.one_man_war(self.agent_list[0], self.pokemon_list)
+        # else:
+        for p in range(self.pokemon_list.__len__()):
+            pok: pokemon = self.pokemon_list[p]
+            if not pok.taken:
+                self.allocate(self.agent_list, pok)
+        for a in self.agent_list:
+            ag: agent = a
+            if ag.explore.__len__() == 1:
+                path = self.graphAlgo.shortest_path(ag.src, self.center_point)
+                curr_path = path[1]
+
+                if path[0] != -1:
+                    for i in range(1, curr_path.__len__()):
+                        ag.explore.append(curr_path[i])
 
     def one_man_war(self, ag: agent, pok_list: list):
         path: list = []
         dic = {}
         for p in pok_list:
             pok: pokemon = p
-            print("POKKK", pok.value, pok.p_src, pok.p_dest)
             pok.taken = True
             ag.targets[pok.p_src] = True
             path.append(pok.p_src)
             dic[pok.p_src] = pok.p_dest
-        final_path = self.graphAlgo.TSP(path, dic)[0]
-        if ag.src == final_path[0]:
-            for a in range(1, final_path.__len__()):
-                ag.explore.append(final_path[a])
+        ttl = int(float(self.client.time_to_end()) / 1000)
+        final_path = self.graphAlgo.TSP(path, dic, ttl, ag.speed)[0]
+        if self.graphAlgo.TSP(path, dic, ttl, ag.speed)[1] < ttl + 1:
+            for i in pok_list:
+                self.allocate([ag], i)
         else:
-            if self.deployed:
-                ag.explore.pop(0)
-            shortest = self.graphAlgo.shortest_path(ag.src, final_path[0])[1]
-            for i in range(shortest.__len__() - 1):
-                ag.explore.append(shortest[i])
-            for t in final_path:
-                ag.explore.append(t)
-        print("PATHHHHHHHHHHHHHHH: ", ag.explore)
+            if ag.src == final_path[0]:
+                for a in range(1, final_path.__len__()):
+                    ag.explore.append(final_path[a])
+            else:
+                if self.deployed:
+                    ag.explore.pop(0)
+                shortest = self.graphAlgo.shortest_path(ag.src, final_path[0])[1]
+                for i in range(shortest.__len__() - 1):
+                    ag.explore.append(shortest[i])
+                for t in final_path:
+                    ag.explore.append(t)
 
     def allocate(self, listAgent: list, pok: pokemon):
         currAgent = None
@@ -114,7 +133,7 @@ class MyGame:
 
             else:
                 shortest: tuple = self.graphAlgo.shortest_path(ag.explore[ag.explore.__len__() - 1], pok.p_src)
-                if ag.weight + shortest[0] < minVal and shortest[0] != -1:
+                if (ag.weight + shortest[0]) / ag.speed < minVal and shortest[0] != -1:
                     minVal = ag.weight + shortest[0]
                     currAgent = ag
                     on_the_way = False
@@ -129,7 +148,6 @@ class MyGame:
 
         if not on_the_way:
             currAgent.weight += minVal
-            print("PATHHHHHHHHHHHHHHH: ", path)
             currAgent.explore.pop()
             for i in range(0, path.__len__()):
                 currAgent.explore.append(path[i])
@@ -139,28 +157,28 @@ class MyGame:
     def is_on_the_way(self, pokSrc: int, pokDest: int, explore: list) -> tuple:
         temp = 0
 
-        for e in explore:
+        for e in range(explore.__len__()):
             if 0 < e < explore.__len__() - 1:
-                temp += self.graph.edges_out[e][e + 1]  # weight
+                temp += self.graphAlgo.get_graph().all_out_edges_of_node(explore[e])[explore[e + 1]]  # weight
             if e < explore.__len__() - 1:
                 if explore[e] == pokSrc and explore[e + 1] == pokDest:
                     return True, temp
         return False, -1
 
-    def deploy_agents(self) -> bool:
-        for a in range(len(self.agent_list)):
-            ag: agent = self.agent_list[a]
-            for p in range(len(self.pokemon_list)):
-                curr_pok: pokemon = self.pokemon_list[p]
-                if not curr_pok.taken:
-                    ag.src = curr_pok.p_src
-                    curr_pok.taken = True
-                    if ag.explore[0] != curr_pok.p_src:
-                        ag.explore[0] = curr_pok.p_src
-                    ag.explore.append(curr_pok.p_dest)
-        self.deployed = True
-
-        return True
+    # def deploy_agents(self) -> bool:
+    #     for a in range(self.numAgents(self.client.get_info())):
+    #         for p in range(len(self.pokemon_list)):
+    #             curr_pok: pokemon = self.pokemon_list[p]
+    #             if not curr_pok.taken:
+    #                 ag.src = curr_pok.p_src
+    #                 curr_pok.taken = True
+    #                 if ag.explore[0] != curr_pok.p_src:
+    #                     ag.explore[0] = curr_pok.p_src
+    #                 ag.explore.append(curr_pok.p_dest)
+    #                 self.client.add_agent("{\"id\":" + curr_pok.p_src + "}")
+    #     self.deployed = True
+    #
+    #     return True
 
     def numAgents(self, info: str) -> int:
         return int(json.loads(info)["GameServer"]["agents"])
@@ -177,7 +195,6 @@ class MyGame:
             src: Node = self.graph.get_all_v().get(i)
             for j in self.graph.all_out_edges_of_node(src.id):
                 dest: Node = self.graph.get_all_v().get(j)
-                # print(src.id, "-->", dest.id)
 
                 if type < 0:
                     if src.id > dest.id and self.is_on(pokPos, src.pos, dest.pos) < min_dist:
@@ -187,7 +204,6 @@ class MyGame:
                     if src.id < dest.id and self.is_on(pokPos, src.pos, dest.pos) < min_dist:
                         min_dist = self.is_on(pokPos, src.pos, dest.pos)
                         curr_pos = (src.id, dest.id)
-        # print(min_dist)
         return curr_pos
 
     def is_on(self, pokPos: tuple, srcPos: tuple, destPos: tuple) -> float:
