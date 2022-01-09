@@ -24,7 +24,7 @@ pygame.font.init()
 FONT = pygame.font.SysFont("Ariel", 20, bold=True)
 BUTTON_FONT = pygame.font.SysFont("Ariel", 30)
 SAVE_LOAD_FONT = pygame.font.SysFont("Ariel", 40)
-CONSOLE_FONT = pygame.font.SysFont("Ariel", 30)
+CONSOLE_FONT = pygame.font.SysFont("Helvetica", 30, bold=True)
 
 screen = pygame.display.set_mode((1600, 800), flags=pygame.RESIZABLE)
 SCREEN_TOPLEFT = screen.get_rect().topleft
@@ -37,10 +37,9 @@ class Background(pygame.sprite.Sprite):
     def __init__(self, image_file, location):
         pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
         self.image = pygame.image.load(image_file)
-        self.image = pygame.transform.scale(self.image, (1600, 800))
+        self.image = pygame.transform.scale(self.image, screen.get_size())
         self.rect = self.image.get_rect()
-        # self.image.set_colorkey((0, 0, 0))
-        # self.rect.left, self.rect.top = location
+        screen.get_size()
 
 
 # this algorithm is not mine. https://stackoverflow.com/questions/13053061/circle-line-intersection-points
@@ -121,37 +120,7 @@ class Console:
         self.func = ""
         self.src = ""
         self.dest = ""
-        self.con_text = "welcome to BOY Graph."
-
-    def welcome(self):
-        self.func = ""
-        self.src = ""
-        self.dest = ""
-        self.con_text = "welcome to BOY Graph."
-
-    def set_func(self, func_name, src="", dest=""):
-        global cities
-        if func_name == "ShortestPath":
-            init_src = ""
-            init_dest = ""
-            if src == "":
-                src = ".. please choose source"
-            else:
-                init_src = "src id:"
-                if dest == "":
-                    dest = ".. please choose destination"
-                else:
-                    init_dest = "dest id:"
-            self.con_text = f"{func_name} {init_src} {src} {init_dest} {dest}"
-            # self.func = func_name
-        if func_name == "CenterPoint":
-            self.con_text = f"The {func_name} of this graph is : {center_id.__getitem__(0)}"
-
-        if func_name == "TSP":
-            if cities.__len__() == 0:
-                self.con_text = "choose nodes for TSP"
-            else:
-                self.con_text = f"TSP path {cities}"
+        self.con_text = "Catch 'em All"
 
     # def print_shortest(self, src, dest, path, dist):
     #     action_button.showButt()
@@ -353,7 +322,7 @@ class GUI:
         # pygame.draw.rect(screen, save_button.color, save_button.rect, 3)
 
         console_text = CONSOLE_FONT.render(console.con_text, True, (0, 0, 0))
-        screen.blit(console_text, (5, screen.get_height() - 30))
+        screen.blit(console_text, (screen.get_rect().right/2.3, screen.get_height() - 40))
 
         if node_display != -1:
             node_text = FONT.render(str(node_display), True, (0, 0, 0))
@@ -455,69 +424,116 @@ class GUI:
         for a in range(self.game.agent_list.__len__()):
             ag: agent = self.game.agent_list[a]
 
-            if self.game.agent_list[a].attack_mode:
-                x = self.my_scale(data=float(self.game.agent_list[a].pos[0]), x=True)
-                y = self.my_scale(data=float(self.game.agent_list[a].pos[1]), y=True)
-                pos = (int(x), int(y))
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (242, 2, 2))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (242, 5, 5))
-            else:
-                x = self.my_scale(data=float(self.game.agent_list[a].pos[0]), x=True)
-                y = self.my_scale(data=float(self.game.agent_list[a].pos[1]), y=True)
-                pos = (int(x), int(y))
+            x = self.my_scale(data=float(self.game.agent_list[a].pos[0]), x=True)
+            y = self.my_scale(data=float(self.game.agent_list[a].pos[1]), y=True)
+            pos = (int(x) - 15, int(y) - 15)
 
+            if self.game.agent_list[a].attack_mode:
+                agent_image = pygame.image.load("../data/BackgroundPics/gaming.png")
+                agent_image = pygame.transform.scale(agent_image, (40, 40))
+                screen.blit(agent_image, pos)
+            else:
                 # draw agent
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (122, 61, 23))
+                agent_image = pygame.image.load("../data/BackgroundPics/pokeball.png")
+                agent_image = pygame.transform.scale(agent_image, (25, 25))
+                screen.blit(agent_image, pos)
+                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (122, 61, 23))
 
         # draw pokemon
         for p in range(self.game.pokemon_list.__len__()):
             x = self.my_scale(data=float(self.game.pokemon_list[p].pos[0]), x=True)
             y = self.my_scale(data=float(self.game.pokemon_list[p].pos[1]), y=True)
+            pos = (int(x) - 15, int(y) - 15)
 
             if self.game.pokemon_list[p].value <= 5.0:
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 0, 0))
+                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 0, 0))
+
+                pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/rattata.png")
+                pokemon_image = pygame.transform.scale(pokemon_image, (35, 35))
+                screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 6:
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 255, 0))
+                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 255, 0))
+
+                pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/bullbasaur.png")
+                pokemon_image = pygame.transform.scale(pokemon_image, (35, 35))
+                screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 7:
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 128, 128))
+                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 128, 128))
+
+                pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/eevee.png")
+                pokemon_image = pygame.transform.scale(pokemon_image, (35, 35))
+                screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 8:
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 0, 255))
+                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 0, 255))
+
+                pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/jigglypuff.png")
+                pokemon_image = pygame.transform.scale(pokemon_image, (35, 35))
+                screen.blit(pokemon_image, pos)
+
             elif self.game.pokemon_list[p].value == 9:
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (25, 25, 25))
+                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (25, 25, 25))
+
+                pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/snorlax.png")
+                pokemon_image = pygame.transform.scale(pokemon_image, (45, 45))
+                screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 10:
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 0, 255))
+                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 0, 255))
+
+                pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/eevee.png")
+                pokemon_image = pygame.transform.scale(pokemon_image, (45, 45))
+                screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 11:
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 128, 0))
+                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 128, 0))
+
+                pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/jigglypuff.png")
+                pokemon_image = pygame.transform.scale(pokemon_image, (45, 45))
+                screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 12:
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 0, 255))
+                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 0, 255))
+
+                pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/meowth.png")
+                pokemon_image = pygame.transform.scale(pokemon_image, (55, 55))
+                screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 13:
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 128, 255))
+                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 128, 255))
+
+                pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/charmander.png")
+                pokemon_image = pygame.transform.scale(pokemon_image, (55, 55))
+                screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 14:
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 255, 255))
+                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 255, 255))
+
+                pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/psyduck.png")
+                pokemon_image = pygame.transform.scale(pokemon_image, (55, 55))
+                screen.blit(pokemon_image, pos)
 
 
-            elif self.game.pokemon_list[p].value == 15:
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 255, 255))
+            elif self.game.pokemon_list[p].value >= 15:
+                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 255, 255))
+
+                pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/pikachu.png")
+                pokemon_image = pygame.transform.scale(pokemon_image, (62, 62))
+                screen.blit(pokemon_image, pos)
 
     """------------------> END Draw Methods <-----------------"""
 
@@ -528,6 +544,15 @@ class GUI:
         node_display = -1
         try:
             while self.client.is_running() == 'true':
+
+                end = time.time()
+
+                # if first:
+                #     time.sleep(0.1)
+                # else:
+                #     time.sleep(0.1 - (end - start))
+
+                start = time.time()
 
                 is_moved = False
                 for e in pygame.event.get():
@@ -543,8 +568,15 @@ class GUI:
                 clock.tick(60)
                 #
 
-                screen.fill((210, 180, 140))
+                for a in self.game.agent_list:
+                    ag: agent = a
+                    if ag.src == ag.explore[0]:
+                        if ag.targets[ag.src]:
+                            ag.attack_mode = True
+
+                screen.fill((255, 255, 255))
                 BackGround = Background("../data/BackgroundPics/main_pic.png", [0, 0])
+                BackGround.image.set_alpha(180)
                 screen.blit(BackGround.image, BackGround.rect)
                 self.draw(graph, node_display)
                 pygame.display.update()
@@ -564,19 +596,9 @@ class GUI:
                 for a in self.game.agent_list:
                     ag: agent = a
                     if ag.dest == -1:
-                        if ag.src == ag.explore[0]:
-                            if ag.targets[ag.src]:
-                                ag.attack_mode = True
-                        else:
-                            ag.attack_mode = False
-
                         print("AGENT", self.client.get_agents())
                         print(ag.explore)
                         if ag.explore.__len__() > 1:
-                            # if ag.explore[0] == ag.explore[2]:
-                            #     next_node = ag.explore[3]
-                            # else:
-                            # prev = ag.explore[0]
                             ag.explore.pop(0)
                             next_node = ag.explore[0]
                             print("Node: ", next_node)
@@ -585,14 +607,7 @@ class GUI:
 
                 ttl = self.client.time_to_end()
                 print(ttl, self.client.get_info())
-                end = time.time()
 
-                # if first:
-                #     time.sleep(0.1)
-                # else:
-                #     time.sleep(0.1 - (end - start))
-
-                start = time.time()
                 if not is_moved:
                     self.client.move()
         except:
