@@ -1,17 +1,9 @@
-import json
-import threading
-from types import SimpleNamespace
-
 import pygame
-from pygame import *
 
-from client_python.Characters.MyGame import MyGame
-from src.DiGraph import DiGraph
 from client import Client
-from src.GraphAlgo import GraphAlgo
+from client_python.Characters.MyGame import MyGame
 from src.DiGraph import *
-
-# init pygame
+from src.GraphAlgo import GraphAlgo
 
 if __name__ == '__main__':
     # default port

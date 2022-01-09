@@ -370,15 +370,3 @@ class GraphAlgo:
     def plot_graph(self, client: Client, game) -> None:
         GUI(self.graph, client=client, game=game)
 
-# if __name__ == '__main__':
-#     graph = DiGraph()
-#     graph_algo: GraphAlgoInterface = GraphAlgo(graph)
-#
-#     client = Client()
-#     client.start_connection(HOST, PORT)
-#
-#     graph_json = client.get_graph()
-#
-#     graph_algo.load_from_json(graph_json)
-#     print("PRINT", graph_algo.get_graph())
-#     GUI(graph_algo.get_graph())

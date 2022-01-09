@@ -73,9 +73,6 @@ class MyGame:
         self.Call_Of_Duty()
 
     def Call_Of_Duty(self):
-        # if self.agent_list.__len__() == 1:
-        #     self.one_man_war(self.agent_list[0], self.pokemon_list)
-        # else:
         for p in range(self.pokemon_list.__len__()):
             pok: pokemon = self.pokemon_list[p]
             if not pok.taken:
@@ -89,33 +86,6 @@ class MyGame:
                 if path[0] != -1:
                     for i in range(1, curr_path.__len__()):
                         ag.explore.append(curr_path[i])
-
-    # def one_man_war(self, ag: agent, pok_list: list):
-    #     path: list = []
-    #     dic = {}
-    #     for p in pok_list:
-    #         pok: pokemon = p
-    #         pok.taken = True
-    #         ag.targets[pok.p_src] = True
-    #         path.append(pok.p_src)
-    #         dic[pok.p_src] = pok.p_dest
-    #     ttl = int(float(self.client.time_to_end()) / 1000)
-    #     final_path = self.graphAlgo.TSP(path, dic, ttl, ag.speed)[0]
-    #     if self.graphAlgo.TSP(path, dic, ttl, ag.speed)[1] < ttl + 1:
-    #         for i in pok_list:
-    #             self.allocate([ag], i)
-    #     else:
-    #         if ag.src == final_path[0]:
-    #             for a in range(1, final_path.__len__()):
-    #                 ag.explore.append(final_path[a])
-    #         else:
-    #             if self.deployed:
-    #                 ag.explore.pop(0)
-    #             shortest = self.graphAlgo.shortest_path(ag.src, final_path[0])[1]
-    #             for i in range(shortest.__len__() - 1):
-    #                 ag.explore.append(shortest[i])
-    #             for t in final_path:
-    #                 ag.explore.append(t)
 
     def allocate(self, listAgent: list, pok: pokemon):
         currAgent = None
@@ -165,21 +135,6 @@ class MyGame:
                     return True, temp
         return False, -1
 
-    # def deploy_agents(self) -> bool:
-    #     for a in range(self.numAgents(self.client.get_info())):
-    #         for p in range(len(self.pokemon_list)):
-    #             curr_pok: pokemon = self.pokemon_list[p]
-    #             if not curr_pok.taken:
-    #                 ag.src = curr_pok.p_src
-    #                 curr_pok.taken = True
-    #                 if ag.explore[0] != curr_pok.p_src:
-    #                     ag.explore[0] = curr_pok.p_src
-    #                 ag.explore.append(curr_pok.p_dest)
-    #                 self.client.add_agent("{\"id\":" + curr_pok.p_src + "}")
-    #     self.deployed = True
-    #
-    #     return True
-
     def numAgents(self, info: str) -> int:
         return int(json.loads(info)["GameServer"]["agents"])
 
@@ -214,14 +169,6 @@ class MyGame:
         pokDist = math.dist(srcPos, pokPos) + math.dist(pokPos, destPos)
 
         return math.fabs(dis - pokDist)
-
-    def attack(self, ag: agent) -> bool:
-        for i in range(ag.pokemon_radar[ag.src].__len__()):
-            pok_pos = ag.pokemon_radar[ag.src][i].pos
-            if math.dist(ag.get_pos(), (float(pok_pos[0]), float(pok_pos[1]), float(pok_pos[2]))) < EPS:
-                return True
-
-        return False
 
     def __str__(self) -> str:
         return super().__str__()

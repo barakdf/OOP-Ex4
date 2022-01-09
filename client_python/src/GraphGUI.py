@@ -1,20 +1,14 @@
 import sys
-import threading
 import time
 
-import numpy
-import numpy as np
 import pygame
 # from GraphAlgo import *
-import math
 from pygame import gfxdraw
-from tkinter import filedialog as fd
 
 # from client_python.src.GraphAlgo import *
 from client_python.Characters.MyGame import *
 from client_python.client import Client
 from client_python.src import Node
-from data.BackgroundPics import *
 
 prev = 0
 EPS = 0.1
@@ -32,7 +26,7 @@ SCREEN_BUTTON_R = screen.get_width() / 5
 RADIUS = 10
 clock = pygame.time.Clock()
 
-
+""" BackGround Picture """
 class Background(pygame.sprite.Sprite):
     def __init__(self, image_file, location):
         pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
@@ -78,25 +72,6 @@ def node_line_inter(pointA, pointB, pointC, radius):
     return ans
 
 
-class ActionButton:
-    def __init__(self, rect: pygame.Rect, color, text):
-        self.rect = rect
-        self.color = color
-        self.text = text
-        self.is_clicked = False
-        self.show = False
-        self.insert = False
-        self.start = False
-
-    def press(self):
-        self.is_clicked = not self.is_clicked
-
-    def showButt(self):
-        self.show = not self.show
-        self.insert = not self.insert
-        self.start = not self.start
-
-
 class Button:
     def __init__(self, rect: pygame.Rect, color, text, func=None):
         self.rect = rect
@@ -108,30 +83,12 @@ class Button:
     def press(self):
         self.is_clicked = not self.is_clicked
 
-
-class NodeScreen:
-    def __init__(self, rect: pygame.rect, id):
-        self.id = id
-        self.rect = rect
-
-
 class Console:
     def __init__(self):
         self.func = ""
         self.src = ""
         self.dest = ""
         self.con_text = "Catch 'em All"
-
-    # def print_shortest(self, src, dest, path, dist):
-    #     action_button.showButt()
-    #     self.con_text = f"The Shortest Path from {src} to {dest} is {path}. distance: {dist}"
-
-    # def print_TSP(self, path, dist):
-    #     global start_tsp
-    #     action_button.showButt()
-    #     print(path)
-    #     start_tsp = False
-    #     self.con_text = f"The TSP path is {path}, and total distance is {dist}"
 
 
 console = Console()
@@ -161,15 +118,6 @@ def min_max(graph=None):
         TypeError
 
 
-shortest_path = {}
-shortest_src_dest = -1
-center_id = []
-nodes_screen = []
-
-tsp_ans = {}
-cities = []
-start_tsp = False
-
 moves = ""
 catches = ""
 time_left = ""
@@ -184,16 +132,6 @@ class GUI:
         self.client = client
         self.client.start()
         self.display(graph=self.graph)
-
-    # def __init__(self, file: str = None):
-    #     graph = DiGraph()
-    #     self.graph_algo: GraphAlgoInterface = GraphAlgo(graph)
-    #     self.graph_algo.load_from_json(file)
-    #     self.display(self.graph_algo)
-
-    # def init_graph(self, file: str):
-    #     self.graph_algo.load_from_json(file)
-    #     self.display(self.graph_algo)
 
     def update_info(self):
         global moves, catches, time_left
@@ -239,39 +177,6 @@ class GUI:
 
         pygame.draw.aalines(screen, color, True, (start, end), 7)
 
-        # gfxdraw.aapolygon(screen, points, color)
-        # gfxdraw.filled_polygon(screen, points, color)
-
-    # def clicked_center(self, button: Button):
-    #     global center_id
-    #     center = button.func()
-    #     center_id.append(center[0])
-
-    # def clicked_shortest(self, button: Button, src=None, dest=None):
-    #     global shortest_path
-    #     shortest_path_func = button.func(int(src), int(dest))
-    #     shortest_path["dist"] = shortest_path_func[0]
-    #     shortest_path["list"]: list = shortest_path_func[1]
-    #     shortest_path["edges"]: list = []
-    #     shortest_path.get("edges")
-    #     print(shortest_path_func[1])
-    #     for i in range(shortest_path["list"].__len__() - 1):
-    #         shortest_path["edges"].append(
-    #             (shortest_path["list"].__getitem__(i), shortest_path["list"].__getitem__(i + 1)))
-    #     print(shortest_path)
-    #     console.print_shortest(src, dest, path=shortest_path["list"], dist=shortest_path["dist"])
-
-    # def clicked_tsp(self, button: Button, list_cities):
-    #     global cities
-    #     global tsp_ans
-    #     tsp_ans_func = button.func(list_cities)
-    #     tsp_ans["list"] = tsp_ans_func[0]
-    #     tsp_ans["dist"] = tsp_ans_func[1]
-    #     console.set_func("TSP")
-    #     if start_tsp:
-    #         print("GERE", tsp_ans["list"])
-    #         console.print_TSP(tsp_ans["list"], tsp_ans["dist"])
-
     """ -------------------------> DRAW <----------------------------"""
 
     def draw(self, graph, node_display=-1):
@@ -302,31 +207,15 @@ class GUI:
             pygame.draw.rect(screen, (177, 177, 177), stop_button.rect)
         else:
             pygame.draw.rect(screen, STOP_col, stop_button.rect)
-        # if save_button.is_clicked:
-        #     pygame.draw.rect(screen, (177, 177, 177), save_button.rect)
-        # else:
-        #     pygame.draw.rect(screen, LOAD_SAVE_DEAFULT, save_button.rect)
-
-        # """Console Draw"""
-        # pygame.draw.rect(screen, (222, 223, 219), ((0, screen.get_height() - 40), screen.get_rect().bottomright))
-        #
-        # """draw Action_Button"""
-        # if action_button.show:
-        #     pygame.draw.rect(screen, (200, 191, 231), action_button.rect)
 
         pygame.draw.rect(screen, (0, 0, 0), ((0, screen.get_height() - 40), screen.get_rect().bottomright), 3)
         pygame.draw.rect(screen, moves_button.color, moves_button.rect, 3)
         pygame.draw.rect(screen, time_button.color, time_button.rect, 3)
         pygame.draw.rect(screen, catches_button.color, catches_button.rect, 3)
         pygame.draw.rect(screen, stop_button.color, stop_button.rect, 3)
-        # pygame.draw.rect(screen, save_button.color, save_button.rect, 3)
 
-        console_text = CONSOLE_FONT.render(console.con_text, True, (0, 0, 0))
+        console_text = CONSOLE_FONT.render(console.con_text, True, (204, 0, 0))
         screen.blit(console_text, (screen.get_rect().right/2.3, screen.get_height() - 40))
-
-        if node_display != -1:
-            node_text = FONT.render(str(node_display), True, (0, 0, 0))
-            screen.blit(node_text, (300, 20))
 
         """Moves button box draw"""
         move_text = f"{moves_button.text}{moves}"
@@ -350,21 +239,6 @@ class GUI:
         load_button_text = SAVE_LOAD_FONT.render(stop_button.text, True, (253, 196, 0))
         screen.blit(load_button_text,
                     (stop_button.rect.topleft[0] + SCREEN_BUTTON_R / 4 + 40, stop_button.rect.topleft[1] + 7))
-        #
-        # """SAVE button box draw"""
-        # save_button_text = SAVE_LOAD_FONT.render(save_button.text, True, (253, 196, 0))
-        # screen.blit(save_button_text,
-        #             (save_button.rect.topleft[0] + SCREEN_BUTTON_R / 4 + 40, save_button.rect.topleft[1] + 7))
-        #
-        # """Action button box draw"""
-        # if action_button.show:
-        #     if action_button.insert:
-        #         action_button.text = "INSERT"
-        #     else:
-        #         action_button.text = "START"
-        #     action_button_text = BUTTON_FONT.render(action_button.text, True, (0, 0, 0))
-        #     screen.blit(action_button_text,
-        #                 (action_button.rect.topleft[0] + 40, action_button.rect.topleft[1] + 12))
 
         for src in graph.get_all_v().values():
             global RADIUS
@@ -437,8 +311,7 @@ class GUI:
                 agent_image = pygame.image.load("../data/BackgroundPics/pokeball.png")
                 agent_image = pygame.transform.scale(agent_image, (25, 25))
                 screen.blit(agent_image, pos)
-                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (122, 61, 23))
+
 
         # draw pokemon
         for p in range(self.game.pokemon_list.__len__()):
@@ -447,90 +320,71 @@ class GUI:
             pos = (int(x) - 15, int(y) - 15)
 
             if self.game.pokemon_list[p].value <= 5.0:
-                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 0, 0))
+
 
                 pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/rattata.png")
                 pokemon_image = pygame.transform.scale(pokemon_image, (35, 35))
                 screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 6:
-                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 255, 0))
+
 
                 pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/bullbasaur.png")
                 pokemon_image = pygame.transform.scale(pokemon_image, (35, 35))
                 screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 7:
-                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 128, 128))
+
 
                 pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/eevee.png")
                 pokemon_image = pygame.transform.scale(pokemon_image, (35, 35))
                 screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 8:
-                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 0, 255))
+
 
                 pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/jigglypuff.png")
                 pokemon_image = pygame.transform.scale(pokemon_image, (35, 35))
                 screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 9:
-                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (25, 25, 25))
+
 
                 pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/snorlax.png")
                 pokemon_image = pygame.transform.scale(pokemon_image, (45, 45))
                 screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 10:
-                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 0, 255))
+
 
                 pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/eevee.png")
                 pokemon_image = pygame.transform.scale(pokemon_image, (45, 45))
                 screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 11:
-                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 128, 0))
+
 
                 pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/jigglypuff.png")
                 pokemon_image = pygame.transform.scale(pokemon_image, (45, 45))
                 screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 12:
-                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 0, 255))
-
                 pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/meowth.png")
                 pokemon_image = pygame.transform.scale(pokemon_image, (55, 55))
                 screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 13:
-                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 128, 255))
-
                 pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/charmander.png")
                 pokemon_image = pygame.transform.scale(pokemon_image, (55, 55))
                 screen.blit(pokemon_image, pos)
 
             elif self.game.pokemon_list[p].value == 14:
-                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 255, 255))
-
                 pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/psyduck.png")
                 pokemon_image = pygame.transform.scale(pokemon_image, (55, 55))
                 screen.blit(pokemon_image, pos)
 
 
             elif self.game.pokemon_list[p].value >= 15:
-                # gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                # gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 255, 255))
-
                 pokemon_image = pygame.image.load("../data/BackgroundPics/PokemonsIcons/pikachu.png")
                 pokemon_image = pygame.transform.scale(pokemon_image, (62, 62))
                 screen.blit(pokemon_image, pos)
@@ -547,14 +401,14 @@ class GUI:
 
                 end = time.time()
 
-                # if first:
-                #     time.sleep(0.1)
-                # else:
-                #     time.sleep(0.1 - (end - start))
+                if first:
+                    time.sleep(0.07)
+                else:
+                    time.sleep(0.07 - (end - start))
 
                 start = time.time()
 
-                is_moved = False
+
                 for e in pygame.event.get():
                     if e.type == pygame.QUIT:
                         self.client.stop_connection()
@@ -566,7 +420,6 @@ class GUI:
 
                 # refresh rate
                 clock.tick(60)
-                #
 
                 for a in self.game.agent_list:
                     ag: agent = a
@@ -594,62 +447,25 @@ class GUI:
 
                 # choose next edge
                 for a in self.game.agent_list:
+                    is_moved = False
                     ag: agent = a
                     if ag.dest == -1:
-                        print("AGENT", self.client.get_agents())
-                        print(ag.explore)
                         if ag.explore.__len__() > 1:
+                            is_moved = True
                             ag.explore.pop(0)
                             next_node = ag.explore[0]
-                            print("Node: ", next_node)
                             self.client.choose_next_edge(
                                 '{"agent_id":' + str(ag.id) + ', "next_node_id":' + str(next_node) + '}')
+
+                self.client.move()
+
 
                 ttl = self.client.time_to_end()
                 print(ttl, self.client.get_info())
 
-                if not is_moved:
-                    self.client.move()
         except:
             ConnectionResetError(WindowsError)
-        # self.client.stop_connection()
         sys.exit()
-        # print(self.client.get_info())
-
-    # def stop_other_buttons(self, tsp=False, shortest=False, center=False, load=False):
-    #     if center:
-    #         if shortest_button.is_clicked:
-    #             shortest_button.press()
-    #             shortest_path.clear()
-    #         if tsp_button.is_clicked:
-    #             tsp_button.press()
-    #             cities.clear()
-    #     if shortest:
-    #         if center_button.is_clicked:
-    #             center_button.press()
-    #             center_id.clear()
-    #         if tsp_button.is_clicked:
-    #             tsp_button.press()
-    #             cities.clear()
-    #     if tsp:
-    #         if shortest_button.is_clicked:
-    #             shortest_button.press()
-    #             shortest_path.clear()
-    #         if center_button.is_clicked:
-    #             shortest_counter = 0
-    #             center_button.press()
-    #             center_id.clear()
-    #     if load:
-    #         if shortest_button.is_clicked:
-    #             shortest_button.press()
-    #             shortest_path.clear()
-    #         if center_button.is_clicked:
-    #             shortest_counter = 0
-    #             center_button.press()
-    #             center_id.clear()
-    #         if tsp_button.is_clicked:
-    #             tsp_button.press()
-    #             cities.clear()
 
 
 moves_button = Button(pygame.Rect(SCREEN_TOPLEFT, (SCREEN_BUTTON_R, 40)), (0, 0, 0), "Moves: ")
@@ -659,8 +475,3 @@ catches_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 2, 0)
                         "Catches: ")
 stop_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 3, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0,),
                      "STOP")
-# save_button = Button(pygame.Rect((SCREEN_TOPLEFT[0] + SCREEN_BUTTON_R * 4, 0), (SCREEN_BUTTON_R, 40)), (0, 0, 0,),
-#                      "SAVE")
-# action_button = ActionButton(pygame.Rect((screen.get_rect().right - SCREEN_BUTTON_R / 2, screen.get_height() - 40),
-#                                          (screen.get_rect().right, screen.get_rect().bottomright[1])), (0, 0, 0),
-#                              "START")
