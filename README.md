@@ -27,7 +27,7 @@ when the last is the number of the level (from 0 to 15).
 
 Here is an instructional video on how to open and play the game [video]().
 
-![img_9.png](img_9.png)
+![img_9.png](png/img_9.png)
 
 
-![img_8.png](img_8.png)
+![img_8.png](png/img_8.png)
