@@ -153,10 +153,6 @@ class TestDiGraph(TestCase):
         print("Passed All!")
 
     def test_all_in_edges_of_node(self):
-        graph_1: DiGraph = DiGraph()
-        """# INIT graph with nodes [5-9] and edges {5-6} {5-9} {9-5} {8-7} {7-8} {7-9}"""
-        for i in range(5, 10):
-            graph_1.add_node(i, (0, 0, 0))
         graph_1.add_edge(5, 6, 2)
         graph_1.add_edge(5, 9, 3)
         graph_1.add_edge(9, 5, 4)
