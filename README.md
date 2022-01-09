@@ -36,8 +36,3 @@ Here is an example of the game run [video](
 https://user-images.githubusercontent.com/74688329/148701575-2ddc3d32-014d-43d8-94b7-10a7d1a73707.mp4
 
 )
-
-![img_9.png](png/img_9.png)
-
-
-![img_8.png](png/img_8.png)
