@@ -1,5 +1,8 @@
 from unittest import TestCase
-from GraphAlgo import *
+from client_python.src.GraphAlgo import *
+from client_python.src.GraphInterface import *
+from client_python.src.GraphAlgoInterface import *
+from client_python.src.DiGraph import DiGraph
 import numbers
 
 
@@ -375,5 +378,3 @@ class TestGraphAlgo(TestCase):
 
     # def test_plot_graph(self):
     #     self.fail()
-
-

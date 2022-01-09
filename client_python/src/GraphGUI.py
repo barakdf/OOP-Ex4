@@ -489,8 +489,11 @@ class GUI:
                 x = self.my_scale(data=float(self.game.agent_list[a].pos[0]), x=True)
                 y = self.my_scale(data=float(self.game.agent_list[a].pos[1]), y=True)
                 pos = (int(x), int(y))
+
+                #draw agent
                 gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
                 gfxdraw.filled_circle(screen, int(x), int(y), 9, (122, 61, 23))
+
 
         # draw pokemon
         for p in range(self.game.pokemon_list.__len__()):
@@ -500,16 +503,46 @@ class GUI:
             if self.game.pokemon_list[p].value <= 5.0:
                 gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
                 gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 0, 0))
+
+            elif self.game.pokemon_list[p].value == 6:
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 255, 0))
+
+            elif self.game.pokemon_list[p].value == 7:
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 128, 128))
+
             elif self.game.pokemon_list[p].value == 8:
                 gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 255, 64))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 0, 255))
             elif self.game.pokemon_list[p].value == 9:
                 gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 0, 255))
-            elif self.game.pokemon_list[p].value >= 10:
-                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 0, 128))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (25, 25, 25))
 
+            elif self.game.pokemon_list[p].value == 10:
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 0, 255))
+
+            elif self.game.pokemon_list[p].value == 11:
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 128, 0))
+
+            elif self.game.pokemon_list[p].value == 12:
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 0, 255))
+
+            elif self.game.pokemon_list[p].value == 13:
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (0,128, 255))
+
+            elif self.game.pokemon_list[p].value == 14:
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (128, 255, 255))
+
+
+            elif self.game.pokemon_list[p].value == 15:
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 255, 255))
     """------------------> END Draw Methods <-----------------"""
 
     def display(self, graph):

@@ -41,6 +41,7 @@ class MyGame:
         for i in p_dic["Pokemons"]:
             pok = pokemon(value=i["Pokemon"]["value"], edge_type=i["Pokemon"]["type"],
                           pos=i["Pokemon"]["pos"].split(","))
+            print("value------------->", pok.value)
 
             """ find the edge of each pokemon"""
             pokemon_pos = (float(pok.pos[0]), float(pok.pos[1]), float(pok.pos[2]))
@@ -97,7 +98,7 @@ class MyGame:
             if p.p_src == final_path[final_path.__len__() - 1]:
                 ag.explore.append(p.p_dest)
                 break
-        print("PATHHHHHHHHHHHHHHH: ", final_path)
+        # print("PATHHHHHHHHHHHHHHH: ", final_path)
 
     def allocate(self, listAgent: list, pok: pokemon):
         currAgent = None
@@ -130,7 +131,7 @@ class MyGame:
 
         if not on_the_way:
             currAgent.weight += minVal
-            print("PATHHHHHHHHHHHHHHH: ", path)
+            # print("PATHHHHHHHHHHHHHHH: ", path)
             currAgent.explore.pop()
             for i in range(0, path.__len__()):
                 currAgent.explore.append(path[i])
@@ -172,6 +173,8 @@ class MyGame:
         return np.sqrt(np.sum((a - b) ** 2))
 
     def find_edge(self, pokPos: tuple, type: int) -> tuple:
+
+
         min_dist = math.inf
         curr_pos = ()
         for i in self.graph.get_all_v():
@@ -189,6 +192,7 @@ class MyGame:
                         min_dist = self.is_on(pokPos, src.pos, dest.pos)
                         curr_pos = (src.id, dest.id)
         # print(min_dist)
+
         return curr_pos
 
     def is_on(self, pokPos: tuple, srcPos: tuple, destPos: tuple) -> float:
