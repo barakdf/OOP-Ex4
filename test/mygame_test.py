@@ -22,5 +22,5 @@ class myGameTest(TestCase):
         print("Passed!")
 
 
-    
+
 

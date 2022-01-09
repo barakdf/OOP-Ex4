@@ -12,7 +12,7 @@ Data structures and algorithms of this assignment are based on a previous projec
 The idea of the algorithm is to find for each agent the closest Pokemon, and so we will be caught
 as many Pokemons as possible.
 
-You can find the full information about the function here [wiki]().
+You can find the full information about the function here [wiki](https://github.com/B-O-Y-group/OOP-Ex4.wiki.git).
 
 
 
