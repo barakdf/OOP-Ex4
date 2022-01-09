@@ -25,7 +25,11 @@ For choosing the level
 the player need to write "java -jar Ex4_Server_v0.0.jar 0-15 " 
 when the last is the number of the level (from 0 to 15).
 
-Here is an instructional video on how to open and play the game [video]().
+Here is an instructional video on how to open and play the game [video](
+
+https://user-images.githubusercontent.com/74688329/148701212-0519e866-a448-4662-9198-01228afb81e2.mp4
+
+).
 
 ![img_9.png](png/img_9.png)
 
