@@ -76,12 +76,15 @@ class MyGame:
 
     def one_man_war(self, ag: agent, pok_list: list):
         path: list = []
+        dic = {}
         for p in pok_list:
             pok: pokemon = p
+            print("POKKK", pok.value, pok.p_src, pok.p_dest)
             pok.taken = True
             ag.targets[pok.p_src] = True
             path.append(pok.p_src)
-        final_path = self.graphAlgo.TSP(path)[0]
+            dic[pok.p_src] = pok.p_dest
+        final_path = self.graphAlgo.TSP(path, dic)[0]
         if ag.src == final_path[0]:
             for a in range(1, final_path.__len__()):
                 ag.explore.append(final_path[a])
@@ -93,11 +96,7 @@ class MyGame:
                 ag.explore.append(shortest[i])
             for t in final_path:
                 ag.explore.append(t)
-        for p in pok_list:
-            if p.p_src == final_path[final_path.__len__() - 1]:
-                ag.explore.append(p.p_dest)
-                break
-        print("PATHHHHHHHHHHHHHHH: ", final_path)
+        print("PATHHHHHHHHHHHHHHH: ", ag.explore)
 
     def allocate(self, listAgent: list, pok: pokemon):
         currAgent = None

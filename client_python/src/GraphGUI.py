@@ -15,7 +15,7 @@ from client_python.Characters.MyGame import *
 from client_python.client import Client
 from client_python.src import Node
 from data.BackgroundPics import *
-
+prev = 0
 EPS = 0.1
 first = True
 start = 0
@@ -561,9 +561,13 @@ class GUI:
                         else:
                             ag.attack_mode = False
 
-                        print(self.client.get_agents())
+                        print("AGENT",self.client.get_agents())
                         print(ag.explore)
                         if ag.explore.__len__() > 1:
+                            # if ag.explore[0] == ag.explore[2]:
+                            #     next_node = ag.explore[3]
+                            # else:
+                                # prev = ag.explore[0]
                             ag.explore.pop(0)
                             next_node = ag.explore[0]
                             print("Node: ", next_node)

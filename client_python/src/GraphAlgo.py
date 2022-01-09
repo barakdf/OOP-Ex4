@@ -252,7 +252,8 @@ class GraphAlgo:
         @return: List of the the best route , weight of the route list 
     """
 
-    def TSP(self, node_lst: List[int]) -> (List[int], float):
+    def TSP(self, node_lst: List[int], dic: dict) -> (List[int], float):
+        self.get_graph().get_all_v().get(23)
         graph_algo = copy.deepcopy(self.get_graph())
         ansW = math.inf
 
@@ -266,13 +267,14 @@ class GraphAlgo:
 
             node: Node = graph_algo.get_all_v().get(i)
             path_int.append(node)
+            path_int.append(graph_algo.get_all_v().get(dic[node.id]))
 
             # list of all the node except the current
             miss = sort_node_list.copy()
             miss.remove(node.id)
 
             # find the path
-            list_t = self.tsp_rec(path_int, miss, 0, math.inf)
+            list_t = self.tsp_rec(path_int, miss, 0, math.inf, dic, graph_algo)
 
             # Calculate the weight of the route
             curr_weight = self.Calculate_weight(list_t)
@@ -289,18 +291,22 @@ class GraphAlgo:
 
         return ans, ansW
 
-    def tsp_rec(self, path, miss, val, final_v):
+    def tsp_rec(self, path, miss, val, final_v, dic: dict, graph_algo):
         if len(miss) == 0:
+            if dic.__contains__(path[path.__len__()-1].id):
+                path.append(graph_algo.get_all_v().get(dic[path[path.__len__() - 1].id]))
             return path
         i = 0
         while len(miss) > i:
-
             t_val = val + self.shortest_path(path[len(path) - 1].id, miss[i])[0]
             t_miss = miss
             t_path = self.update(path, self.shortest_path(path[len(path) - 1].id, miss[i])[1],
-                                 t_miss)
+                                 t_miss, dic)
+            if dic[path[path.__len__() - 1].id]:
+                path.append(graph_algo.get_all_v().get(dic[path[path.__len__() - 1].id]))
+                t_val += graph_algo.all_out_edges_of_node(path[path.__len__() - 2].id).get(path[path.__len__() - 1].id)
 
-            temp_list = self.tsp_rec(t_path, t_miss, t_val, final_v)
+            temp_list = self.tsp_rec(t_path, t_miss, t_val, final_v, dic, graph_algo)
 
             if t_val < final_v:
                 path = temp_list
@@ -310,7 +316,7 @@ class GraphAlgo:
 
         return path
 
-    def update(self, path, shortest, miss):
+    def update(self, path, shortest, miss, dic: dict):
         ans = path
         graph_algo = copy.deepcopy(self.get_graph())
         for i in range(len(shortest)):
@@ -322,6 +328,11 @@ class GraphAlgo:
             while len(miss) > j:
 
                 if shortest[i] == miss[j]:
+                    if dic.__contains__(i):
+                        if i < shortest.__len__() - 1:
+                            if dic[i] == shortest[i + 1]:
+                                dic.pop(i)
+
                     miss.remove(miss[j])
                 j = j + 1
         return ans
