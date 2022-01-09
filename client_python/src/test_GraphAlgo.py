@@ -2,7 +2,6 @@ import os
 from unittest import TestCase
 import numbers
 
-from client_python.src.DiGraph import DiGraph
 from client_python.src.GraphAlgo import *
 
 

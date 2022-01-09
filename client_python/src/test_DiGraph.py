@@ -152,39 +152,6 @@ class TestDiGraph(TestCase):
         self.assertEqual(expected.keys(), graph_1.get_all_v().keys())
         print("Passed All!")
 
-    def test_all_in_edges_of_node(self):
-        graph_1.add_edge(5, 6, 2)
-        graph_1.add_edge(5, 9, 3)
-        graph_1.add_edge(9, 5, 4)
-        graph_1.add_edge(8, 7, 5)
-        graph_1.add_edge(7, 8, 6)
-        graph_1.add_edge(7, 9, 7)
-
-        print("all_in_edges_of_node -> test 1")
-        """# check all in edges to node 5. expected -> {9-5} edge represent as {other node(9): weight(4)}"""
-        expected_in = {9: 4}
-        self.assertEqual(expected_in, graph_1.all_in_edges_of_node(5))
-        print("Passed!")
-
-        print("all_in_edges_of_node -> test 2")
-        """# check all in edges to node 9, expected -> {5-9}, {7-9}"""
-        expected_in.clear()
-        expected_in = {5: 3, 7: 7}
-        self.assertEqual(expected_in, graph_1.all_in_edges_of_node(9))
-        print("Passed!")
-
-        print("all_in_edges_of_node -> test 3")
-        """# remove edge {5-9} and check all in edges to node 9. expected -> {7-9}"""
-        graph_1.remove_edge(5, 9)
-        expected_in.pop(5)
-        self.assertEqual(expected_in, graph_1.all_in_edges_of_node(9))
-        print("Passed!")
-
-        print("all_in_edges_of_node -> test 4")
-        """# try get all in edges from non-existing node (99). expected ->None + PRINT("node is missing in graph")"""
-        self.assertEqual(None, graph_1.all_in_edges_of_node(99))
-        print("Passed All!")
-
     def test_all_out_edges_of_node(self):
         graph_1: DiGraph = DiGraph()
         """# INIT graph with nodes [5-9] and edges {5-6} {5-9} {9-5} {8-7} {7-8} {7-9}"""

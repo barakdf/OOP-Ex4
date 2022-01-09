@@ -6,7 +6,6 @@ class DiGraph:
         self.MC = 0
         self.nodes = {}
         self.edges_out = {}
-        self.edges_in = {}
         self.edges_out.values().__len__()
 
     def v_size(self) -> int:
@@ -24,11 +23,6 @@ class DiGraph:
 
     def get_all_v(self) -> dict:
         return self.nodes
-
-    def all_in_edges_of_node(self, id1: int) -> dict:
-        if id1 not in self.edges_in:
-            print(id1, "not existing in this dict")  # check if exist
-        return self.edges_in.get(id1)
 
     def all_out_edges_of_node(self, id1: int) -> dict:
         return self.edges_out.get(id1)
@@ -57,10 +51,7 @@ class DiGraph:
         if id1 not in self.edges_out:  # create new dict for edge
             self.edges_out[id1] = {}
             self.edges_out[id1].update()
-        if id2 not in self.edges_in:
-            self.edges_in[id2] = {}
         self.edges_out[id1][id2] = weight
-        self.edges_in[id2][id1] = weight
         self.MC += 1
 
         return True
@@ -85,8 +76,6 @@ class DiGraph:
             if node_id in self.edges_out:  # check if dict edges contain this id
                 self.edges_out.pop(node_id)
                 self.MC += 1
-            if node_id in self.edges_in:
-                self.edges_in.pop(node_id)
                 self.MC += 1
         return True
 
@@ -100,7 +89,6 @@ class DiGraph:
         if node_id1 in self.edges_out:  # check if our dict of edges contain this node
             if node_id2 in self.edges_out.get(node_id1):  # then check if id1 node have value of id2
                 self.edges_out.get(node_id1).pop(node_id2)
-                self.edges_in.get(node_id2).pop(node_id1)
                 self.MC += 1
                 return True
             return False
