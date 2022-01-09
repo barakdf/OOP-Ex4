@@ -21,7 +21,7 @@ EPS = 0.1
 first = True
 start = 0
 pygame.font.init()
-FONT = pygame.font.SysFont("Ariel", 20)
+FONT = pygame.font.SysFont("Ariel", 20, bold=True)
 BUTTON_FONT = pygame.font.SysFont("Ariel", 30)
 SAVE_LOAD_FONT = pygame.font.SysFont("Ariel", 40)
 CONSOLE_FONT = pygame.font.SysFont("Ariel", 30)
@@ -37,8 +37,10 @@ class Background(pygame.sprite.Sprite):
     def __init__(self, image_file, location):
         pygame.sprite.Sprite.__init__(self)  # call Sprite initializer
         self.image = pygame.image.load(image_file)
+        self.image = pygame.transform.scale(self.image, (1600, 800))
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = location
+        # self.image.set_colorkey((0, 0, 0))
+        # self.rect.left, self.rect.top = location
 
 
 # this algorithm is not mine. https://stackoverflow.com/questions/13053061/circle-line-intersection-points
@@ -266,10 +268,10 @@ class GUI:
         xn = x
         points = [(end[0], end[1]), (int(xm), int(ym)), (int(xn), int(yn))]
 
-        pygame.draw.aaline(screen, color, start, end, 4)
+        pygame.draw.aalines(screen, color, True, (start, end), 7)
 
-        gfxdraw.aapolygon(screen, points, color)
-        gfxdraw.filled_polygon(screen, points, color)
+        # gfxdraw.aapolygon(screen, points, color)
+        # gfxdraw.filled_polygon(screen, points, color)
 
     # def clicked_center(self, button: Button):
     #     global center_id
@@ -407,19 +409,17 @@ class GUI:
             except:
                 TypeError
             src_text = FONT.render(str(node.id), True, (0, 0, 0))
-
-            v = graph.v_size()
+            rect = src_text.get_rect(center=(x, y))
 
             node_radius = RADIUS
             if x is not None and y is not None:
-                nodes_screen.append(NodeScreen(pygame.Rect((x - node_radius, y - node_radius), (20, 20)), node.id))
 
                 gfxdraw.aacircle(screen, int(x), int(y), node_radius, (0, 0, 0))
 
                 gfxdraw.aacircle(screen, int(x), int(y), node_radius - 1, (250, 204, 58))
                 gfxdraw.filled_circle(screen, int(x), int(y), node_radius - 1, (250, 204, 58))
 
-                screen.blit(src_text, (x - (node_radius / 2), y - (node_radius / 2)))
+                screen.blit(src_text, rect)
                 try:
                     for dest in graph.all_out_edges_of_node(node.id):
 
@@ -447,8 +447,7 @@ class GUI:
                             else:
                                 src_arrow = collition_src[i + 1]
 
-
-                        self.arrow(src_arrow, dest_arrow, 17, 7, color=(255, 255, 255))
+                        self.arrow(src_arrow, dest_arrow, 17, 7, color=(54, 54, 54))
                 except TypeError:
                     pass
 
@@ -467,10 +466,9 @@ class GUI:
                 y = self.my_scale(data=float(self.game.agent_list[a].pos[1]), y=True)
                 pos = (int(x), int(y))
 
-                #draw agent
+                # draw agent
                 gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
                 gfxdraw.filled_circle(screen, int(x), int(y), 9, (122, 61, 23))
-
 
         # draw pokemon
         for p in range(self.game.pokemon_list.__len__()):
@@ -510,7 +508,7 @@ class GUI:
 
             elif self.game.pokemon_list[p].value == 13:
                 gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-                gfxdraw.filled_circle(screen, int(x), int(y), 9, (0,128, 255))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (0, 128, 255))
 
             elif self.game.pokemon_list[p].value == 14:
                 gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
@@ -520,6 +518,7 @@ class GUI:
             elif self.game.pokemon_list[p].value == 15:
                 gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
                 gfxdraw.filled_circle(screen, int(x), int(y), 9, (255, 255, 255))
+
     """------------------> END Draw Methods <-----------------"""
 
     def display(self, graph):
@@ -544,8 +543,8 @@ class GUI:
                 clock.tick(60)
                 #
 
-                BackGround = Background("../data/BackgroundPics/Orbis_Ship.jpeg", [0, 0])
                 screen.fill((210, 180, 140))
+                BackGround = Background("../data/BackgroundPics/main_pic.png", [0, 0])
                 screen.blit(BackGround.image, BackGround.rect)
                 self.draw(graph, node_display)
                 pygame.display.update()
@@ -583,12 +582,6 @@ class GUI:
                             print("Node: ", next_node)
                             self.client.choose_next_edge(
                                 '{"agent_id":' + str(ag.id) + ', "next_node_id":' + str(next_node) + '}')
-
-                    # if ag.attack_mode:
-                    #     if self.game.attack(ag):
-                    #         self.client.move()
-                    #         is_moved = True
-                    #         ag.attack_mode = False
 
                 ttl = self.client.time_to_end()
                 print(ttl, self.client.get_info())
