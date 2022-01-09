@@ -477,11 +477,20 @@ class GUI:
 
         # draw agents
         for a in range(self.game.agent_list.__len__()):
-            x = self.my_scale(data=float(self.game.agent_list[a].pos[0]), x=True)
-            y = self.my_scale(data=float(self.game.agent_list[a].pos[1]), y=True)
-            pos = (int(x), int(y))
-            gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
-            gfxdraw.filled_circle(screen, int(x), int(y), 9, (122, 61, 23))
+            ag: agent = self.game.agent_list[a]
+
+            if self.game.agent_list[a].attack_mode:
+                x = self.my_scale(data=float(self.game.agent_list[a].pos[0]), x=True)
+                y = self.my_scale(data=float(self.game.agent_list[a].pos[1]), y=True)
+                pos = (int(x), int(y))
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (242, 2, 2))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (242, 5, 5))
+            else:
+                x = self.my_scale(data=float(self.game.agent_list[a].pos[0]), x=True)
+                y = self.my_scale(data=float(self.game.agent_list[a].pos[1]), y=True)
+                pos = (int(x), int(y))
+                gfxdraw.aacircle(screen, int(x), int(y), 9, (122, 61, 23))
+                gfxdraw.filled_circle(screen, int(x), int(y), 9, (122, 61, 23))
 
         # draw pokemon
         for p in range(self.game.pokemon_list.__len__()):
@@ -549,8 +558,8 @@ class GUI:
                         if ag.src == ag.explore[0]:
                             if ag.targets[ag.src]:
                                 ag.attack_mode = True
-                            else:
-                                ag.attack_mode = False
+                        else:
+                            ag.attack_mode = False
 
                         print(self.client.get_agents())
                         print(ag.explore)

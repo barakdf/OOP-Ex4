@@ -66,10 +66,38 @@ class MyGame:
         self.Call_Of_Duty()
 
     def Call_Of_Duty(self):
-        for p in range(self.pokemon_list.__len__()):
-            pok: pokemon = self.pokemon_list[p]
-            if not pok.taken:
-                self.allocate(self.agent_list, pok)
+        if self.agent_list.__len__() == 1:
+            self.one_man_war(self.agent_list[0], self.pokemon_list)
+        else:
+            for p in range(self.pokemon_list.__len__()):
+                pok: pokemon = self.pokemon_list[p]
+                if not pok.taken:
+                    self.allocate(self.agent_list, pok)
+
+    def one_man_war(self, ag: agent, pok_list: list):
+        path: list = []
+        for p in pok_list:
+            pok: pokemon = p
+            pok.taken = True
+            ag.targets[pok.p_src] = True
+            path.append(pok.p_src)
+        final_path = self.graphAlgo.TSP(path)[0]
+        if ag.src == final_path[0]:
+            for a in range(1, final_path.__len__()):
+                ag.explore.append(final_path[a])
+        else:
+            if self.deployed:
+                ag.explore.pop(0)
+            shortest = self.graphAlgo.shortest_path(ag.src, final_path[0])[1]
+            for i in range(shortest.__len__() - 1):
+                ag.explore.append(shortest[i])
+            for t in final_path:
+                ag.explore.append(t)
+        for p in pok_list:
+            if p.p_src == final_path[final_path.__len__() - 1]:
+                ag.explore.append(p.p_dest)
+                break
+        print("PATHHHHHHHHHHHHHHH: ", final_path)
 
     def allocate(self, listAgent: list, pok: pokemon):
         currAgent = None
@@ -101,6 +129,7 @@ class MyGame:
             currAgent.pokemon_radar[pok.p_src].append(pok)
 
         if not on_the_way:
+            currAgent.weight += minVal
             print("PATHHHHHHHHHHHHHHH: ", path)
             currAgent.explore.pop()
             for i in range(0, path.__len__()):
