@@ -131,6 +131,8 @@ class GUI:
         self.game = game
         self.client = client
         self.client.start()
+        self.total_time = int((int(self.client.time_to_end())/1000) + 1)
+        print("TOTAL TIME", self.total_time)
         self.display(graph=self.graph)
 
     def update_info(self):
@@ -456,8 +458,9 @@ class GUI:
                             next_node = ag.explore[0]
                             self.client.choose_next_edge(
                                 '{"agent_id":' + str(ag.id) + ', "next_node_id":' + str(next_node) + '}')
-
-                self.client.move()
+                print("MOVES", int(moves))
+                if int(moves) < self.total_time * 10:
+                    self.client.move()
 
 
                 ttl = self.client.time_to_end()
