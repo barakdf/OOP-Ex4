@@ -36,3 +36,7 @@ Here is an example of the game run [video](
 https://user-images.githubusercontent.com/74688329/148701575-2ddc3d32-014d-43d8-94b7-10a7d1a73707.mp4
 
 )
+
+*ScreenShots* :
+![screenshot1](![image](https://user-images.githubusercontent.com/74688329/148701995-d458e3a3-6220-4dda-9e2a-81fd8f5b3293.png)
+)
